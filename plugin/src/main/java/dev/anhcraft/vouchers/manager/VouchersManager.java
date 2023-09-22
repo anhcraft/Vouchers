@@ -9,6 +9,7 @@ import dev.anhcraft.vouchers.config.VoucherConfig;
 import dev.anhcraft.vouchers.util.ConfigHelper;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -175,6 +176,8 @@ public class VouchersManager {
             itemBuilder.flag(ItemFlag.HIDE_POTION_EFFECTS);
             item = itemBuilder.build();
         }
+        if (item.getType() == Material.AIR)
+            item.setType(Material.PAPER); // set default material if unspecified
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(voucherIdentifier, PersistentDataType.STRING, id);
         item.setItemMeta(meta);
