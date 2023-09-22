@@ -1,0 +1,7 @@
+prefix: "&e[Vouchers] "
+default-use-message:
+  - ""
+  - "&eYou have used: {voucher-name}"
+  - ""
+no-rewards-given: "&cNo rewards given. Try again!"
+invalid-voucher: "&cThis voucher no longer exists"

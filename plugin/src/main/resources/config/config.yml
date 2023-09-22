@@ -1,0 +1,8 @@
+default-sound: "ENTITY_PLAYER_LEVELUP"
+default-voucher-footer:
+  - ""
+  - "&eRight click to use"
+prevent-no-rewards: false
+date-format: "dd/MM/yyyy HH:mm:ss"
+dev-mode: false
+debug-level: 0

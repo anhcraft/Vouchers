@@ -1,0 +1,35 @@
+small-exp-bottle:
+  name: "&#72db8cSmall EXP bottle"
+  description:
+    - "&fGains &a50&f EXP"
+  rewards:
+    - "exp give %player_name% 50"
+large-exp-bottle:
+  name: "&#4fb4e3Large EXP bottle"
+  description:
+    - "&fGains &b100&f EXP"
+    - "&a10%&f chance to receive extra 25%"
+  rewards:
+    - "exp give %player_name% 100"
+    - "[chance=0.25] exp give %player_name% 25"
+aid-kit:
+  name: "&cFirst Aid Kit"
+  description:
+    - "&fHeal yourself"
+    - "&eExclusive to VIP:"
+    - "&fGains &aSpeed I&f for 10s"
+  rewards:
+    - "heal %player_name%"
+    - "[permission=vip.rank] effect give %player_name% speed 10 1"
+exclusive-armor:
+  name: "&eExclusive Armor Set"
+  description:
+    - "&ex1 &5Super&f Netherite Helmet"
+    - "&ex1 &5Super&f Netherite Chestplate"
+    - "&ex1 &5Super&f Netherite Leggings"
+    - "&ex1 &5Super&f Netherite Boots"
+  rewards:
+    - "give %player_name% netherite_helmet 1"
+    - "give %player_name% netherite_chestplate 1"
+    - "give %player_name% netherite_leggings 1"
+    - "give %player_name% netherite_boots 1"
