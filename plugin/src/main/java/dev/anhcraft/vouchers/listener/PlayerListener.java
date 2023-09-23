@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
         if (!ok && plugin.mainConfig.preventNoRewards) {
             plugin.msg(e.getPlayer(), plugin.messageConfig.noRewardsGiven);
             plugin.pluginLogger.scope("redeem")
-                    .add("player", e.getPlayer().getName())
+                    .add("player", e.getPlayer())
                     .add("voucher", id)
                     .add("virtual", false)
                     .add("success", false)
@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
             e.getPlayer().getInventory().setItemInMainHand(item);
         }
         plugin.pluginLogger.scope("redeem")
-                .add("player", e.getPlayer().getName())
+                .add("player", e.getPlayer())
                 .add("voucher", id)
                 .add("virtual", false)
                 .add("success", true)
