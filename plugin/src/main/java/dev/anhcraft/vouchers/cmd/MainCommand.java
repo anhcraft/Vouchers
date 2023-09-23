@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.CommandHelp;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+import dev.anhcraft.config.bukkit.utils.ColorUtil;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
 import dev.anhcraft.vouchers.api.entity.Voucher;
@@ -52,7 +53,7 @@ public class MainCommand extends BaseCommand {
         ItemStack itemStack = plugin.vouchersManager.buildVoucher(voucherId, voucher);
         itemStack.setAmount(amount);
         ItemUtil.addToInventory(op.player, itemStack);
-        sender.sendMessage(GREEN + "Given " + amount + " of " + voucherId + " to " + op.player.getName());
+        sender.sendMessage(GREEN + "Given " + amount + " of " + ColorUtil.colorize(voucher.getName()) + GREEN + " to " + op.player.getName());
     }
 
     @Subcommand("reload")
