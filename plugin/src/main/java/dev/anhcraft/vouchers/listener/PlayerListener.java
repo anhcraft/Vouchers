@@ -21,7 +21,7 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void interact(PlayerInteractEvent e) {
         if ((e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR) || e.getHand() != EquipmentSlot.HAND) return;
         if (e.useItemInHand() == Event.Result.DENY && plugin.mainConfig.ignoreDeniedInteract) return;
@@ -36,6 +36,7 @@ public class PlayerListener implements Listener {
             plugin.msg(e.getPlayer(), plugin.messageConfig.invalidVoucher);
             return;
         }
+        e.setCancelled(true); // always cancel
 
         VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item);
         Bukkit.getPluginManager().callEvent(event);
