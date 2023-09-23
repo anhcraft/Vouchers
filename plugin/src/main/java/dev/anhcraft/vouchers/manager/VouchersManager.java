@@ -165,7 +165,7 @@ public class VouchersManager {
         for (String str : plugin.messageConfig.defaultUseMessage) {
             plugin.rawMsg(player, str.replace("{voucher-name}", voucher.getName()));
         }
-        player.playSound(player.getLocation(), plugin.mainConfig.defaultSound, 1.0f, 1.0f);
+        player.playSound(player.getLocation(), plugin.mainConfig.defaultUseSound, 1.0f, 1.0f);
     }
 
     public ItemStack buildVoucher(String id, Voucher voucher) {
@@ -180,7 +180,7 @@ public class VouchersManager {
             item = itemBuilder.build();
         }
         if (item.getType() == Material.AIR)
-            item.setType(Material.PAPER); // set default material if unspecified
+            item.setType(plugin.mainConfig.defaultVoucherIcon); // set default material if unspecified
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(voucherIdentifier, PersistentDataType.STRING, id);
         item.setItemMeta(meta);

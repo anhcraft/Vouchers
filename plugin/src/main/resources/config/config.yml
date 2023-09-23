@@ -1,4 +1,5 @@
-default-sound: "ENTITY_PLAYER_LEVELUP"
+default-voucher-icon: paper
+default-use-sound: entity_player_levelup
 default-voucher-footer:
   - ""
   - "&eRight click to use"

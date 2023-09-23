@@ -1,6 +1,7 @@
 package dev.anhcraft.vouchers.config;
 
 import dev.anhcraft.config.annotations.*;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 
 import java.text.SimpleDateFormat;
@@ -12,7 +13,10 @@ public class MainConfig {
     public int debugLevel;
 
     @Optional
-    public Sound defaultSound = Sound.ENTITY_PLAYER_LEVELUP;
+    public Material defaultVoucherIcon = Material.PAPER;
+
+    @Optional
+    public Sound defaultUseSound = Sound.ENTITY_PLAYER_LEVELUP;
 
     public String[] defaultVoucherFooter;
 
