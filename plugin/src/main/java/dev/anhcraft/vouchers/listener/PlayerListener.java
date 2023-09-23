@@ -5,6 +5,7 @@ import dev.anhcraft.vouchers.Vouchers;
 import dev.anhcraft.vouchers.api.entity.Voucher;
 import dev.anhcraft.vouchers.api.event.VoucherRedeemEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,9 +21,10 @@ public class PlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     private void interact(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR || e.getHand() != EquipmentSlot.HAND) return;
+        if ((e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.RIGHT_CLICK_AIR) || e.getHand() != EquipmentSlot.HAND) return;
+        if (e.useItemInHand() == Event.Result.DENY && plugin.mainConfig.ignoreDeniedInteract) return;
 
         ItemStack item = e.getItem();
         if (ItemUtil.isEmpty(item)) return;

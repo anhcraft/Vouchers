@@ -22,6 +22,8 @@ public class MainConfig {
 
     public boolean preventNoRewards;
 
+    public boolean ignoreDeniedInteract;
+
     @Validation(notNull = true, silent = true)
     private String dateFormat = "dd/MM/yyyy HH:mm:ss";
 
