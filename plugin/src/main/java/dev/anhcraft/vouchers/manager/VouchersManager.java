@@ -46,6 +46,9 @@ public class VouchersManager {
             voucherBuilder.description(config.description);
             if (config.customItem != null) {
                 ItemBuilder itemBuilder = config.customItem;
+                if (itemBuilder.material() == Material.AIR) {
+                    itemBuilder.material(config.icon);
+                }
                 if (itemBuilder.name() == null || itemBuilder.name().isEmpty()) {
                     itemBuilder.name(config.name);
                 }

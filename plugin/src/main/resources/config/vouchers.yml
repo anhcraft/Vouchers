@@ -1,10 +1,12 @@
 small-exp-bottle:
+  icon: experience_bottle
   name: "&#72db8cSmall EXP bottle"
   description:
     - "&fGains &a50&f EXP"
   rewards:
     - "exp give %player_name% 50"
 large-exp-bottle:
+  icon: experience_bottle
   name: "&#4fb4e3Large EXP bottle"
   description:
     - "&fGains &b100&f EXP"
@@ -22,6 +24,7 @@ aid-kit:
     - "heal %player_name%"
     - "[permission=vip.rank] effect give %player_name% speed 10 1"
 exclusive-armor:
+  icon: ender_chest
   name: "&eExclusive Armor Set"
   description:
     - "&ex1 &5Super&f Netherite Helmet"
