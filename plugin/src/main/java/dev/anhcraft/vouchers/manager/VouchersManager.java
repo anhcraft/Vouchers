@@ -72,9 +72,13 @@ public class VouchersManager {
     public boolean onUse(Player player, Voucher voucher) {
         boolean executed = false;
 
+        plugin.debug("Executing %d rewards from '%s' for '%s'", voucher.getRewards().length, voucher.getName(), player.getName());
+
         outer:
         for (String reward : voucher.getRewards()) {
+            plugin.debug(2, "- Before PlaceholderAPI-applied: %s", reward);
             reward = PlaceholderAPI.setPlaceholders(player, reward);
+            plugin.debug(2, "- After PlaceholderAPI-applied: %s", reward);
 
             boolean runAsPlayer = false;
             double chance = 0.0;
@@ -87,10 +91,10 @@ public class VouchersManager {
             while (m.find()) {
                 endOfMatcher = Math.max(endOfMatcher, m.end());
                 String tag = m.group();
-                tag = tag.substring(1, tag.length() - 1);
-                String[] args = tag.split("=");
+                String[] args = tag.substring(1, tag.length() - 1).split("=");
                 switch (args[0]) {
                     case "player":
+                        plugin.debug(2, "- Run as player: %s", tag);
                         runAsPlayer = args.length == 1 || args[1].equalsIgnoreCase("true");
                         break;
                     case "chance":
@@ -104,6 +108,7 @@ public class VouchersManager {
                                 throwError(player, voucher.getName(), reward, tag);
                                 continue outer;
                             }
+                            plugin.debug(2, "- Chance=%f: %s", chance, tag);
                         } catch (NumberFormatException e) {
                             throwError(player, voucher.getName(), reward, tag);
                             continue outer;
@@ -120,6 +125,7 @@ public class VouchersManager {
                                 throwError(player, voucher.getName(), reward, tag);
                                 continue outer;
                             }
+                            plugin.debug(2, "- Delay=%d: %s", delay, tag);
                         } catch (NumberFormatException e) {
                             throwError(player, voucher.getName(), reward, tag);
                             continue outer;
@@ -131,14 +137,27 @@ public class VouchersManager {
                             continue outer;
                         }
                         permission = args[1];
+                        plugin.debug(2, "- Permission=%s: %s", args[1], tag);
                         break;
                 }
             }
 
             String cmd = reward.substring(endOfMatcher).trim();
-            if (cmd.isEmpty()) continue;
-            if (permission != null && !player.hasPermission(permission)) continue;
-            if (ThreadLocalRandom.current().nextDouble() > chance) continue;
+            plugin.debug(2, "- Command: %s", cmd);
+
+            if (cmd.isEmpty()) {
+                plugin.debug(2, "=> FAILED: Skipped due to empty command given");
+                continue;
+            }
+            if (permission != null && !player.hasPermission(permission)) {
+                plugin.debug(2, "=> FAILED: Skipped due to no permission");
+                continue;
+            }
+            if (chance > 0 && ThreadLocalRandom.current().nextDouble() > chance) {
+                plugin.debug(2, "=> FAILED: Skipped due to unlucky");
+                continue;
+            }
+            plugin.debug(2, "=> SUCCESS");
 
             CommandSender sender = runAsPlayer ? player : Bukkit.getConsoleSender();
 
