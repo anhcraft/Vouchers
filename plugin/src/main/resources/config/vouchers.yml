@@ -18,14 +18,14 @@ aid-kit:
   name: "&cFirst Aid Kit"
   description:
     - "&fHeal yourself"
-    - "&eExclusive to VIP:"
-    - "&fGains &aSpeed I&f for 10s"
+    - "&fExclusive to &eVIP:"
+    - "&f - Gains &aSpeed I&f for 10s"
   rewards:
     - "heal %player_name%"
     - "[permission=vip.rank] effect give %player_name% speed 10 1"
 exclusive-armor:
   icon: ender_chest
-  name: "&eExclusive Armor Set"
+  name: "&#666666Exclusive Armor Set"
   description:
     - "&ex1 &5Super&f Netherite Helmet"
     - "&ex1 &5Super&f Netherite Chestplate"
