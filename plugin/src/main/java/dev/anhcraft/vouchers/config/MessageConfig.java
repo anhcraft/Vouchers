@@ -13,4 +13,10 @@ public class MessageConfig {
     public String noRewardsGiven;
     @Validation(notNull = true)
     public String invalidVoucher;
+    @Validation(notNull = true)
+    public String globalUsageLimit;
+    @Validation(notNull = true)
+    public String playerUsageLimit;
+    @Validation(notNull = true)
+    public String inCooldown;
 }

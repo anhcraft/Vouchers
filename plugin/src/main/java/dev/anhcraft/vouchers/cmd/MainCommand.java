@@ -8,6 +8,8 @@ import dev.anhcraft.config.bukkit.utils.ColorUtil;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
 import dev.anhcraft.vouchers.api.entity.Voucher;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
@@ -54,6 +56,55 @@ public class MainCommand extends BaseCommand {
         itemStack.setAmount(amount);
         ItemUtil.addToInventory(op.player, itemStack);
         sender.sendMessage(GREEN + "Given " + amount + " of " + ColorUtil.colorize(voucher.getName()) + GREEN + " to " + op.player.getName());
+    }
+
+    @Subcommand("reset cooldown")
+    @CommandPermission("vouchers.reset.cooldown")
+    @CommandCompletion("@players @vouchers")
+    public void resetCooldown(CommandSender sender, OfflinePlayer reference, String voucherId) {
+        if (!reference.hasPlayedBefore()) {
+            sender.sendMessage(RED + "This player has not played before!");
+            return;
+        }
+        if (!reference.isOnline())
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
+
+        Vouchers.getApi().requirePlayerData(reference.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(RED + throwable.getMessage());
+                return;
+            }
+            playerData.setLastUsed(voucherId, 0);
+            sender.sendMessage(GREEN + "Cooldown reset");
+        });
+    }
+
+    @Subcommand("reset limit")
+    @CommandPermission("vouchers.reset.limit")
+    @CommandCompletion("@players @vouchers")
+    public void resetUsageLimit(CommandSender sender, String ref, String voucherId) {
+        if (ref.equals("*")) {
+            Vouchers.getApi().getServerData().setUsageLimitCount(voucherId, 0);
+            sender.sendMessage(GREEN + "Usage limit reset");
+            return;
+        }
+
+        var reference = Bukkit.getOfflinePlayer(ref);
+        if (!reference.hasPlayedBefore()) {
+            sender.sendMessage(RED + "This player has not played before!");
+            return;
+        }
+        if (!reference.isOnline())
+            sender.sendMessage(YELLOW + "Fetching player data as he is currently offline...");
+
+        Vouchers.getApi().requirePlayerData(reference.getUniqueId()).whenComplete((playerData, throwable) -> {
+            if (throwable != null) {
+                sender.sendMessage(RED + throwable.getMessage());
+                return;
+            }
+            playerData.setUsageLimitCount(voucherId, 0);
+            sender.sendMessage(GREEN + "Usage limit reset");
+        });
     }
 
     @Subcommand("reload")

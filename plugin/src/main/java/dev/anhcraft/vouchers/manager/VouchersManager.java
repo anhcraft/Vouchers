@@ -4,10 +4,14 @@ import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.jvmkit.utils.ObjectUtil;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
+import dev.anhcraft.vouchers.api.data.PlayerData;
+import dev.anhcraft.vouchers.api.data.ServerData;
 import dev.anhcraft.vouchers.api.entity.Voucher;
 import dev.anhcraft.vouchers.api.entity.VoucherBuilder;
+import dev.anhcraft.vouchers.api.util.GroupSettings;
 import dev.anhcraft.vouchers.config.VoucherConfig;
 import dev.anhcraft.vouchers.util.ConfigHelper;
+import dev.anhcraft.vouchers.util.TimeUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -62,6 +66,12 @@ public class VouchersManager {
                 voucherBuilder.customItem(itemBuilder.build());
             }
             voucherBuilder.rewards(config.rewards);
+            if (config.cooldown != null) {
+                voucherBuilder.cooldown(GroupSettings.of(GroupSettings.COOLDOWN_PERM, config.cooldown, false));
+            }
+            if (config.usageLimit != null) {
+                voucherBuilder.usageLimit(GroupSettings.of(GroupSettings.USAGE_LIMIT_PERM, config.usageLimit, true));
+            }
             vouchers.put(id, voucherBuilder.build());
         }
         plugin.getLogger().info("Loaded " + vouchers.size() + " vouchers");
@@ -69,6 +79,37 @@ public class VouchersManager {
 
     public Map<String, Voucher> getVouchers() {
         return vouchers;
+    }
+
+    public boolean preUse(Player player, String id, Voucher voucher) {
+        plugin.debug(2, "Checking '%s' prerequisite for '%s'", id, player.getName());
+
+        var globalUsage = Vouchers.getApi().getServerData().getUsageLimitCount(id);
+        var globalUsageLimit = voucher.getUsageLimit().getGlobal();
+        plugin.debug(2, "- Global usage limit: %d/%d", globalUsage, globalUsageLimit);
+        if (globalUsageLimit > 0 && globalUsage >= globalUsageLimit) {
+            plugin.msg(player, plugin.messageConfig.globalUsageLimit.replace("{max}", String.valueOf(globalUsageLimit)));
+            return false;
+        }
+
+        var playerData = Vouchers.getApi().getPlayerData(player);
+        var playerUsage = playerData.getUsageLimitCount(id);
+        var playerUsageLimit = voucher.getUsageLimit().evaluate(player);
+        plugin.debug(2, "- Player usage limit: %d/%d", playerUsage, playerUsageLimit);
+        if (playerUsageLimit > 0 &&playerUsage >= playerUsageLimit) {
+            plugin.msg(player, plugin.messageConfig.playerUsageLimit.replace("{max}", String.valueOf(playerUsageLimit)));
+            return false;
+        }
+
+        var nextCooldown = playerData.getLastUsed(id) + voucher.getCooldown().evaluate(player);
+        var remainTime = Math.max(0, (nextCooldown - System.currentTimeMillis()) / 1000);
+        plugin.debug(2, "- Cooldown remain: %d", remainTime);
+        if (remainTime > 0) {
+            plugin.msg(player, plugin.messageConfig.inCooldown.replace("{time}", TimeUtils.format(remainTime)));
+            return false;
+        }
+
+        return true;
     }
 
     public boolean onUse(Player player, Voucher voucher) {
@@ -182,11 +223,17 @@ public class VouchersManager {
         ));
     }
 
-    public void postUse(Player player, Voucher voucher) {
+    public void postUse(Player player, String id, Voucher voucher) {
         for (String str : plugin.messageConfig.defaultUseMessage) {
             plugin.rawMsg(player, str.replace("{voucher-name}", voucher.getName()));
         }
         player.playSound(player.getLocation(), plugin.mainConfig.defaultUseSound, 1.0f, 1.0f);
+        PlayerData pd = Vouchers.getApi().getPlayerData(player);
+        pd.setLastUsed(id, System.currentTimeMillis());
+        pd.increaseUsageLimitCount(id);
+        ServerData sd = Vouchers.getApi().getServerData();
+        sd.increaseUsageCount(id);
+        sd.increaseUsageLimitCount(id);
     }
 
     public ItemStack buildVoucher(String id, Voucher voucher) {

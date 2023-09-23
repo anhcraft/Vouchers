@@ -5,3 +5,6 @@ default-use-message:
   - ""
 no-rewards-given: "&cNo rewards given. Try again!"
 invalid-voucher: "&cThis voucher no longer exists"
+global-usage-limit: "&cToo many people have used this voucher! &f({max})"
+player-usage-limit: "&cYou have reached usage limit &f({max})"
+in-cooldown: "&cYou are on cooldown: &f{time}&c left"

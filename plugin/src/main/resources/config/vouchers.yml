@@ -23,6 +23,11 @@ aid-kit:
   rewards:
     - "heal %player_name%"
     - "[permission=vip.rank] effect give %player_name% speed 10 1"
+  cooldown: {default: 180}
+  usage-limit:
+    default: 3
+    vip: 5
+    mvp: 10
 exclusive-armor:
   icon: ender_chest
   name: "&#666666Exclusive Armor Set"
@@ -36,3 +41,4 @@ exclusive-armor:
     - "give %player_name% netherite_chestplate 1"
     - "give %player_name% netherite_leggings 1"
     - "give %player_name% netherite_boots 1"
+  usage-limit: {global: 100, default: 1}

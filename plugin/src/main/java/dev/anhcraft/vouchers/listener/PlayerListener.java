@@ -38,6 +38,10 @@ public class PlayerListener implements Listener {
         }
         e.setCancelled(true); // always cancel
 
+        if (!plugin.vouchersManager.preUse(e.getPlayer(), id, voucher)) {
+            return;
+        }
+
         VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
@@ -65,6 +69,6 @@ public class PlayerListener implements Listener {
                 .add("virtual", false)
                 .add("success", true)
                 .flush();
-        plugin.vouchersManager.postUse(e.getPlayer(), voucher);
+        plugin.vouchersManager.postUse(e.getPlayer(), id, voucher);
     }
 }

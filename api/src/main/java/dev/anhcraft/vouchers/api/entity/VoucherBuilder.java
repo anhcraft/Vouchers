@@ -1,5 +1,7 @@
 package dev.anhcraft.vouchers.api.entity;
 
+import com.google.common.base.Preconditions;
+import dev.anhcraft.vouchers.api.util.GroupSettings;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,8 @@ public class VoucherBuilder {
     private List<String> description = new ArrayList<>(3);
     private List<String> rewards = new ArrayList<>(3);
     private ItemStack customItem;
+    private GroupSettings cooldown = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
+    private GroupSettings usageLimit = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
 
     public VoucherBuilder icon(@NotNull Material icon) {
         this.icon = icon;
@@ -41,7 +45,20 @@ public class VoucherBuilder {
         return this;
     }
 
+    public VoucherBuilder cooldown(@NotNull GroupSettings cooldown) {
+        this.cooldown = cooldown;
+        return this;
+    }
+
+    public VoucherBuilder usageLimit(@NotNull GroupSettings usageLimit) {
+        this.usageLimit = usageLimit;
+        return this;
+    }
+
     public Voucher build() {
-        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem);
+        Preconditions.checkNotNull(icon, "Icon must not be null");
+        Preconditions.checkNotNull(name, "Name must not be null");
+        Preconditions.checkNotNull(description, "Description must not be null");
+        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem, usageLimit, cooldown);
     }
 }
