@@ -1,6 +1,7 @@
 package dev.anhcraft.vouchers.manager;
 
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
+import dev.anhcraft.jvmkit.utils.ObjectUtil;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
 import dev.anhcraft.vouchers.api.entity.Voucher;
@@ -42,6 +43,7 @@ public class VouchersManager {
         for (String id : vouchersConfig.getKeys(false)) {
             VoucherConfig config = ConfigHelper.load(VoucherConfig.class, vouchersConfig.getConfigurationSection(id));
             VoucherBuilder voucherBuilder = new VoucherBuilder();
+            voucherBuilder.icon(ObjectUtil.optional(config.icon, plugin.mainConfig.defaultVoucherIcon));
             voucherBuilder.name(config.name);
             voucherBuilder.description(config.description);
             if (config.customItem != null) {
@@ -191,6 +193,7 @@ public class VouchersManager {
         ItemStack item = voucher.getCustomItem();
         if (item == null) {
             ItemBuilder itemBuilder = new ItemBuilder();
+            itemBuilder.material(voucher.getIcon());
             itemBuilder.name(voucher.getName());
             itemBuilder.lore(Arrays.asList(voucher.getDescription()));
             itemBuilder.lore().addAll(Arrays.asList(plugin.mainConfig.defaultVoucherFooter));
@@ -198,8 +201,6 @@ public class VouchersManager {
             itemBuilder.flag(ItemFlag.HIDE_POTION_EFFECTS);
             item = itemBuilder.build();
         }
-        if (item.getType() == Material.AIR)
-            item.setType(plugin.mainConfig.defaultVoucherIcon); // set default material if unspecified
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(voucherIdentifier, PersistentDataType.STRING, id);
         item.setItemMeta(meta);

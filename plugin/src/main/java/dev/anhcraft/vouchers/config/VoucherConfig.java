@@ -1,8 +1,10 @@
 package dev.anhcraft.vouchers.config;
 
 import dev.anhcraft.config.annotations.Configurable;
+import dev.anhcraft.config.annotations.Optional;
 import dev.anhcraft.config.annotations.Validation;
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,9 +12,11 @@ import org.jetbrains.annotations.Nullable;
 public class VoucherConfig {
     @Validation(notNull = true)
     public String name;
-    @Validation(notNull = true)
-    public String[] description;
 
+    @Optional
+    public String[] description = ArrayUtils.EMPTY_STRING_ARRAY;
+
+    @Nullable
     public Material icon;
 
     @Validation(notNull = true)

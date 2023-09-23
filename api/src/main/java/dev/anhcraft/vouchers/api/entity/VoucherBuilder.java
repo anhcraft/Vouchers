@@ -1,5 +1,6 @@
 package dev.anhcraft.vouchers.api.entity;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,10 +10,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VoucherBuilder {
+    private Material icon;
     private String name;
     private List<String> description = new ArrayList<>(3);
     private List<String> rewards = new ArrayList<>(3);
     private ItemStack customItem;
+
+    public VoucherBuilder icon(@NotNull Material icon) {
+        this.icon = icon;
+        return this;
+    }
 
     public VoucherBuilder name(@NotNull String name) {
         this.name = name;
@@ -35,6 +42,6 @@ public class VoucherBuilder {
     }
 
     public Voucher build() {
-        return new Voucher(name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem);
+        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem);
     }
 }
