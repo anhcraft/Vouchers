@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import dev.anhcraft.vouchers.Vouchers;
 import org.bukkit.OfflinePlayer;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +36,8 @@ public class ScopedLog {
             return value;
         } else if (value instanceof OfflinePlayer) {
             return ((OfflinePlayer) value).getUniqueId().toString();
+        } else if (value instanceof Collection || value.getClass().isArray()) {
+            return value;
         }
         return String.valueOf(value);
     }

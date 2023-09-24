@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class PlayerListener implements Listener {
     private final Vouchers plugin;
 
@@ -44,16 +46,26 @@ public class PlayerListener implements Listener {
 
         VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item);
         Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) return;
+        if (event.isCancelled()) {
+            plugin.pluginLogger.scope("redeem")
+                    .add("player", e.getPlayer())
+                    .add("voucher", id)
+                    .add("virtual", false)
+                    .add("success", false)
+                    .add("error", "cancelled")
+                    .flush();
+            return;
+        }
 
-        boolean ok = plugin.vouchersManager.onUse(e.getPlayer(), voucher);
-        if (!ok && plugin.mainConfig.preventNoRewards) {
+        List<String> executedCommands = plugin.vouchersManager.onUse(e.getPlayer(), voucher);
+        if (executedCommands.isEmpty() && plugin.mainConfig.preventNoRewards) {
             plugin.msg(e.getPlayer(), plugin.messageConfig.noRewardsGiven);
             plugin.pluginLogger.scope("redeem")
                     .add("player", e.getPlayer())
                     .add("voucher", id)
                     .add("virtual", false)
                     .add("success", false)
+                    .add("error", "empty")
                     .flush();
             return;
         }
@@ -68,6 +80,7 @@ public class PlayerListener implements Listener {
                 .add("voucher", id)
                 .add("virtual", false)
                 .add("success", true)
+                .add("commands", executedCommands)
                 .flush();
         plugin.vouchersManager.postUse(e.getPlayer(), id, voucher);
     }

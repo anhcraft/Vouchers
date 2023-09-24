@@ -24,9 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -112,8 +110,8 @@ public class VouchersManager {
         return true;
     }
 
-    public boolean onUse(Player player, Voucher voucher) {
-        boolean executed = false;
+    public List<String> onUse(Player player, Voucher voucher) {
+        List<String> executedCommands = new ArrayList<>();
 
         plugin.debug("Executing %d rewards from '%s' for '%s'", voucher.getRewards().length, voucher.getName(), player.getName());
 
@@ -210,10 +208,10 @@ public class VouchersManager {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.dispatchCommand(sender, cmd), delay);
             }
 
-            executed = true;
+            executedCommands.add(cmd);
         }
 
-        return executed;
+        return executedCommands;
     }
 
     private void throwError(Player player, String voucher, String reward, String tag) {
