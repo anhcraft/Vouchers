@@ -101,7 +101,7 @@ public class VouchersManager {
             return false;
         }
 
-        var nextCooldown = playerData.getLastUsed(id) + voucher.getCooldown().evaluate(player);
+        var nextCooldown = playerData.getLastUsed(id) + voucher.getCooldown().evaluate(player) * 1000L;
         var remainTime = Math.max(0, (nextCooldown - System.currentTimeMillis()) / 1000);
         plugin.debug(2, "- Cooldown remain: %d", remainTime);
         if (remainTime > 0) {
