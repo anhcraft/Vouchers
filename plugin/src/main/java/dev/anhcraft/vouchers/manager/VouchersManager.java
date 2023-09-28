@@ -1,5 +1,8 @@
 package dev.anhcraft.vouchers.manager;
 
+import com.ezylang.evalex.EvaluationException;
+import com.ezylang.evalex.Expression;
+import com.ezylang.evalex.parser.ParseException;
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.jvmkit.utils.ObjectUtil;
 import dev.anhcraft.palette.util.ItemUtil;
@@ -70,6 +73,7 @@ public class VouchersManager {
             if (config.usageLimit != null) {
                 voucherBuilder.usageLimit(GroupSettings.of(GroupSettings.USAGE_LIMIT_PERM, config.usageLimit, true));
             }
+            voucherBuilder.condition(config.condition);
             vouchers.put(id, voucherBuilder.build());
         }
         plugin.getLogger().info("Loaded " + vouchers.size() + " vouchers");
@@ -105,6 +109,25 @@ public class VouchersManager {
         if (remainTime > 0) {
             plugin.msg(player, plugin.messageConfig.inCooldown.replace("{time}", TimeUtils.format(remainTime)));
             return false;
+        }
+
+        var condition = voucher.getCondition();
+        if (condition != null) {
+            plugin.debug(2, "- Before PlaceholderAPI-applied condition: %s", condition);
+            condition = PlaceholderAPI.setPlaceholders(player, condition);
+            plugin.debug(2, "- After PlaceholderAPI-applied condition: %s", condition);
+            try {
+                // Currently EvalEx does not support single quotes so this is a weird workaround
+                var expression = new Expression(condition.replace("'", "\"")).evaluate();
+                if (!expression.isBooleanValue() || !expression.getBooleanValue()) {
+                    plugin.msg(player, plugin.messageConfig.conditionNotSatisfied);
+                    return false;
+                }
+            } catch (EvaluationException | ParseException e) {
+                plugin.debug(2, "- Failed to evaluate condition: %s", condition);
+                plugin.msg(player, plugin.messageConfig.conditionNotSatisfied);
+                return false;
+            }
         }
 
         return true;

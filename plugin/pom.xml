@@ -77,6 +77,10 @@
                                     <pattern>org.jetbrains</pattern>
                                     <shadedPattern>dev.anhcraft.vouchers.lib.jetbrains</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.ezylang.evalex</pattern>
+                                    <shadedPattern>dev.anhcraft.vouchers.lib.evalex</shadedPattern>
+                                </relocation>
                             </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
@@ -127,6 +131,12 @@
             <groupId>com.vlkan.rfos</groupId>
             <artifactId>rotating-fos</artifactId>
             <version>0.9.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ezylang</groupId>
+            <artifactId>EvalEx</artifactId>
+            <version>3.0.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

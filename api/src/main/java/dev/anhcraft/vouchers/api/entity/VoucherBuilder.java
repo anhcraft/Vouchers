@@ -19,6 +19,7 @@ public class VoucherBuilder {
     private ItemStack customItem;
     private GroupSettings cooldown = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
     private GroupSettings usageLimit = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
+    private String condition;
 
     public VoucherBuilder icon(@NotNull Material icon) {
         this.icon = icon;
@@ -55,10 +56,15 @@ public class VoucherBuilder {
         return this;
     }
 
+    public VoucherBuilder condition(@Nullable String condition) {
+        this.condition = condition;
+        return this;
+    }
+
     public Voucher build() {
         Preconditions.checkNotNull(icon, "Icon must not be null");
         Preconditions.checkNotNull(name, "Name must not be null");
         Preconditions.checkNotNull(description, "Description must not be null");
-        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem, usageLimit, cooldown);
+        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem, usageLimit, cooldown, condition);
     }
 }

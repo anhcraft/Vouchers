@@ -17,13 +17,15 @@ public class Voucher {
     private final ItemStack customItem;
     private final GroupSettings usageLimit;
     private final GroupSettings cooldown;
+    private final String condition;
 
     public Voucher(@NotNull Material icon,
                    @NotNull String name,
                    @NotNull String[] description,
                    @NotNull String[] rewards,
                    @Nullable ItemStack customItem,
-                   @NotNull GroupSettings usageLimit, @NotNull GroupSettings cooldown) {
+                   @NotNull GroupSettings usageLimit, @NotNull GroupSettings cooldown,
+                   @Nullable String condition) {
         this.icon = icon;
         this.name = name;
         this.description = description;
@@ -31,6 +33,7 @@ public class Voucher {
         this.customItem = customItem;
         this.usageLimit = usageLimit;
         this.cooldown = cooldown;
+        this.condition = condition;
     }
 
     @NotNull
@@ -68,6 +71,11 @@ public class Voucher {
         return cooldown;
     }
 
+    @Nullable
+    public String getCondition() {
+        return condition;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,12 +87,13 @@ public class Voucher {
                 Arrays.equals(rewards, voucher.rewards) &&
                 Objects.equals(customItem, voucher.customItem) &&
                 Objects.equals(usageLimit, voucher.usageLimit) &&
-                Objects.equals(cooldown, voucher.cooldown);
+                Objects.equals(cooldown, voucher.cooldown) &&
+                Objects.equals(condition, voucher.condition);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(icon, name, customItem, usageLimit, cooldown);
+        int result = Objects.hash(icon, name, customItem, usageLimit, cooldown, condition);
         result = 31 * result + Arrays.hashCode(description);
         result = 31 * result + Arrays.hashCode(rewards);
         return result;

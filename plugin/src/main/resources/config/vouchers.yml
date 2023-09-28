@@ -42,3 +42,4 @@ exclusive-armor:
     - "give %player_name% netherite_leggings 1"
     - "give %player_name% netherite_boots 1"
   usage-limit: {global: 100, default: 1}
+  condition: "%player_level% >= 5 && '%player_world%' == 'world'"

@@ -32,4 +32,7 @@ public class VoucherConfig {
 
     @Nullable
     public Map<String, Integer> cooldown;
+
+    @Nullable
+    public String condition;
 }
