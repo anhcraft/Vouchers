@@ -189,7 +189,7 @@ public class VouchersManager {
                                 throwError(player, voucher.getName(), reward, tag);
                                 continue outer;
                             }
-                            plugin.debug(2, "- Delay=%d: %s", delay, tag);
+                            plugin.debug(2, "- Delay=%ds: %s", delay, tag);
                         } catch (NumberFormatException e) {
                             throwError(player, voucher.getName(), reward, tag);
                             continue outer;
@@ -228,7 +228,7 @@ public class VouchersManager {
             if (delay == 0) {
                 Bukkit.dispatchCommand(sender, cmd);
             } else {
-                Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.dispatchCommand(sender, cmd), delay);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.dispatchCommand(sender, cmd), delay*20L);
             }
 
             executedCommands.add(cmd);
