@@ -38,7 +38,7 @@ public class MainCommand extends BaseCommand {
     @Subcommand("give")
     @CommandPermission("vouchers.give")
     @CommandCompletion("@players @vouchers")
-    public void give(CommandSender sender, OnlinePlayer op, String voucherId, @Default("1") int amount) {
+    public void give(CommandSender sender, OnlinePlayer op, String voucherId, @Default("1") int amount, @Optional String exclusivePlayerName) {
         if (amount < 0) {
             sender.sendMessage(RED + "Amount must not be negative");
             return;
@@ -47,12 +47,23 @@ public class MainCommand extends BaseCommand {
             sender.sendMessage(YELLOW + "Given none of " + voucherId + " to " + op.player.getName());
             return;
         }
+        OfflinePlayer exclusivePlayer = null;
+        if (exclusivePlayerName != null) {
+            exclusivePlayer = Bukkit.getOfflinePlayer(exclusivePlayerName);
+            if (!exclusivePlayer.hasPlayedBefore()) {
+                sender.sendMessage(RED + "That exclusive player has not played before!");
+                return;
+            }
+        }
         Voucher voucher = plugin.vouchersManager.getVouchers().get(voucherId);
         if (voucher == null) {
             sender.sendMessage(RED + "Voucher not found: " + voucherId);
             return;
         }
         ItemStack itemStack = plugin.vouchersManager.buildVoucher(voucherId, voucher);
+        if (exclusivePlayer != null) {
+            itemStack = plugin.vouchersManager.changeExclusivity(itemStack, exclusivePlayer.getUniqueId());
+        }
         itemStack.setAmount(amount);
         ItemUtil.addToInventory(op.player, itemStack);
         sender.sendMessage(GREEN + "Given " + amount + " of " + ColorUtil.colorize(voucher.getName()) + GREEN + " to " + op.player.getName());

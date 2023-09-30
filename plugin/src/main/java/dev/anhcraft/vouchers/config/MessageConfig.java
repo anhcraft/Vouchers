@@ -23,4 +23,7 @@ public class MessageConfig {
 
     @Optional
     public String conditionNotSatisfied = "&cYou do not satisfy the condition";
+
+    @Optional
+    public String exclusivityNotSatisfied = "&cThis voucher is exclusive to someone else. You cannot use it!";
 }

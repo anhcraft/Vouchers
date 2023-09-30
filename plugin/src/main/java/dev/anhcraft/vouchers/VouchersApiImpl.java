@@ -50,6 +50,16 @@ public class VouchersApiImpl implements VouchersApi {
     }
 
     @Override
+    public ItemStack setExclusive(@Nullable ItemStack item, @Nullable UUID player) {
+        return plugin.vouchersManager.changeExclusivity(item, player);
+    }
+
+    @Override
+    public @Nullable UUID getExclusivePlayer(@Nullable ItemStack item) {
+        return plugin.vouchersManager.identifyExclusivity(item);
+    }
+
+    @Override
     public @NotNull PlayerData getPlayerData(@NotNull Player player) {
         return plugin.playerDataManager.getData(player);
     }

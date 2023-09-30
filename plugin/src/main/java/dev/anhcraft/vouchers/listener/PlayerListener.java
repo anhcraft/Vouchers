@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerListener implements Listener {
     private final Vouchers plugin;
@@ -39,6 +40,12 @@ public class PlayerListener implements Listener {
             return;
         }
         e.setCancelled(true); // always cancel
+
+        UUID exclusivePlayer = plugin.vouchersManager.identifyExclusivity(item);
+        if (exclusivePlayer != null && !exclusivePlayer.equals(e.getPlayer().getUniqueId())) {
+            plugin.msg(e.getPlayer(), plugin.messageConfig.exclusivityNotSatisfied);
+            return;
+        }
 
         if (!plugin.vouchersManager.preUse(e.getPlayer(), id, voucher)) {
             return;

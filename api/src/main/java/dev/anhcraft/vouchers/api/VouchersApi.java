@@ -64,6 +64,35 @@ public interface VouchersApi {
     String scanVoucher(@Nullable ItemStack item);
 
     /**
+     * Sets the "exclusive" status for the given voucher item.
+     * @param item the item (non-voucher items allowed)
+     * @param player the player who is the only one can redeem this voucher
+     *               (or {@code null} to remove the "exclusive" status)
+     * @return the voucher or the original item if it is not a voucher
+     */
+    @Nullable
+    ItemStack setExclusive(@Nullable ItemStack item, @Nullable UUID player);
+
+    /**
+     * Unsets the "exclusive" status for the given voucher item.<br>
+     * This is the same as calling {@link #setExclusive(ItemStack, UUID)} with owner is {@code null}.
+     * @param item the item (non-voucher items allowed)
+     * @return the voucher or the original item if it is not a voucher
+     */
+    @Nullable
+    default ItemStack unsetExclusive(@Nullable ItemStack item) {
+        return setExclusive(item, null);
+    }
+
+    /**
+     * Gets the player who this voucher is exclusive for.
+     * @param item the item (non-voucher items allowed)
+     * @return the player; otherwise, {@code null} if the item is not a voucher or no player was defined
+     */
+    @Nullable
+    UUID getExclusivePlayer(@Nullable ItemStack item);
+
+    /**
      * Gets player data of an online player.<br>
      * For any online player, the data always exists during their session.
      * @param player The player

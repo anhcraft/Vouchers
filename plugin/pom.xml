@@ -81,6 +81,10 @@
                                     <pattern>com.ezylang.evalex</pattern>
                                     <shadedPattern>dev.anhcraft.vouchers.lib.evalex</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.jeff_media.morepersistentdatatypes</pattern>
+                                    <shadedPattern>dev.anhcraft.vouchers.lib.mpdt</shadedPattern>
+                                </relocation>
                             </relocations>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
@@ -137,6 +141,12 @@
             <groupId>com.ezylang</groupId>
             <artifactId>EvalEx</artifactId>
             <version>3.0.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jeff_media</groupId>
+            <artifactId>MorePersistentDataTypes</artifactId>
+            <version>2.4.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

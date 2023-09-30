@@ -3,6 +3,7 @@ package dev.anhcraft.vouchers.manager;
 import com.ezylang.evalex.EvaluationException;
 import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.parser.ParseException;
+import com.jeff_media.morepersistentdatatypes.DataType;
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.jvmkit.utils.ObjectUtil;
 import dev.anhcraft.palette.util.ItemUtil;
@@ -37,10 +38,12 @@ public class VouchersManager {
     private final Vouchers plugin;
     private final Map<String, Voucher> vouchers = new HashMap<>();
     private final NamespacedKey voucherIdentifier;
+    private final NamespacedKey exclusivePlayerIdentifier;
 
     public VouchersManager(Vouchers plugin) {
         this.plugin = plugin;
         voucherIdentifier = new NamespacedKey(plugin, "voucher");
+        exclusivePlayerIdentifier = new NamespacedKey(plugin, "exclusive-player");
     }
 
     public void reload(YamlConfiguration vouchersConfig) {
@@ -282,5 +285,32 @@ public class VouchersManager {
         if (meta == null)
             return null;
         return meta.getPersistentDataContainer().get(voucherIdentifier, PersistentDataType.STRING);
+    }
+
+    public UUID identifyExclusivity(ItemStack item) {
+        if (ItemUtil.isEmpty(item))
+            return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null)
+            return null;
+        if (!meta.getPersistentDataContainer().has(voucherIdentifier, PersistentDataType.STRING))
+            return null;
+        return meta.getPersistentDataContainer().get(exclusivePlayerIdentifier, DataType.UUID);
+    }
+
+    public ItemStack changeExclusivity(ItemStack item, UUID id) {
+        if (ItemUtil.isEmpty(item))
+            return item;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null)
+            return item;
+        if (!meta.getPersistentDataContainer().has(voucherIdentifier, PersistentDataType.STRING))
+            return item;
+        if (id != null)
+            meta.getPersistentDataContainer().set(exclusivePlayerIdentifier, DataType.UUID, id);
+        else
+            meta.getPersistentDataContainer().remove(exclusivePlayerIdentifier);
+        item.setItemMeta(meta);
+        return item;
     }
 }
