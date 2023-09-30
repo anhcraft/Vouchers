@@ -15,22 +15,53 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface VouchersApi {
+    /**
+     * Gets all voucher ids.
+     * @return a set of voucher ids
+     */
     @NotNull
     Set<String> getVoucherIds();
 
+    /**
+     * Gets all vouchers available.
+     * @return a list of vouchers
+     */
     @NotNull
     List<Voucher> getVouchers();
 
+    /**
+     * Registers a new voucher.
+     * @param id the id
+     * @param voucher the voucher
+     * @return {@code true} if success, or {@code false} if failed (e.g: duplication)
+     */
     boolean registerVoucher(@NotNull String id, @NotNull Voucher voucher);
 
+    /**
+     * Gets the voucher given its id.
+     * @param id the id
+     * @return the voucher or {@code null} if not found
+     */
     @Nullable
     Voucher getVoucher(@Nullable String id);
 
+    /**
+     * Builds a voucher item given its id.
+     * @param id the id
+     * @return the item
+     */
     @NotNull
     ItemStack buildVoucher(@NotNull String id);
 
+    /**
+     * Gets the voucher id from the given item.<br>
+     * If the item is a voucher, an ID is <b>always</b> returned no matter if that voucher exists or not. To know if
+     * that voucher exists, use {@link #getVoucher(String)} to check.
+     * @param item the item
+     * @return the voucher id or {@code null} if the item is not a voucher
+     */
     @Nullable
-    String scanVoucher(@Nullable ItemStack voucher);
+    String scanVoucher(@Nullable ItemStack item);
 
     /**
      * Gets player data of an online player.<br>
