@@ -4,6 +4,8 @@ import co.aikar.commands.BukkitCommandCompletionContext;
 import co.aikar.commands.CommandCompletions;
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.base.Preconditions;
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
 import dev.anhcraft.config.bukkit.utils.ColorUtil;
 import dev.anhcraft.jvmkit.utils.FileUtil;
 import dev.anhcraft.jvmkit.utils.IOUtil;
@@ -96,6 +98,11 @@ public final class Vouchers extends JavaPlugin {
         cmpl.registerAsyncCompletion("vouchers", context -> API.getVoucherIds());
 
         ReflectionUtil.setDeclaredStaticField(ApiProvider.class, "api", API);
+
+        new UpdateChecker(this, UpdateCheckSource.SPIGOT, "112837")
+                .setDonationLink("https://paypal.me/lycheene")
+                .checkEveryXHours(12)
+                .checkNow();
     }
 
     @Override
