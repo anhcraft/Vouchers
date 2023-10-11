@@ -152,8 +152,9 @@ public class VouchersManager {
             int delay = 0;
             String permission = null;
 
-            int endOfMatcher = 0;
+            int messageType = 0; // 0: none, 1: message, 2: broadcast
 
+            int endOfMatcher = 0;
             Matcher m = CONDITION_TAG_PATTERN.matcher(reward);
             while (m.find()) {
                 endOfMatcher = Math.max(endOfMatcher, m.end());
@@ -163,6 +164,14 @@ public class VouchersManager {
                     case "player":
                         plugin.debug(2, "- Run as player: %s", tag);
                         runAsPlayer = args.length == 1 || args[1].equalsIgnoreCase("true");
+                        break;
+                    case "message":
+                        plugin.debug(2, "- Message: %s", tag);
+                        messageType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 1 : 0;
+                        break;
+                    case "broadcast":
+                        plugin.debug(2, "- Broadcast: %s", tag);
+                        messageType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 2 : 0;
                         break;
                     case "chance":
                         if (args.length == 1) {
@@ -209,11 +218,11 @@ public class VouchersManager {
                 }
             }
 
-            String cmd = reward.substring(endOfMatcher).trim();
-            plugin.debug(2, "- Command: %s", cmd);
+            String ctn = reward.substring(endOfMatcher).trim();
+            plugin.debug(2, "- Content: %s", ctn);
 
-            if (cmd.isEmpty()) {
-                plugin.debug(2, "=> FAILED: Skipped due to empty command given");
+            if (ctn.isEmpty()) {
+                plugin.debug(2, "=> FAILED: Skipped due to empty content given");
                 continue;
             }
             if (permission != null && !player.hasPermission(permission)) {
@@ -226,18 +235,39 @@ public class VouchersManager {
             }
             plugin.debug(2, "=> SUCCESS");
 
-            CommandSender sender = runAsPlayer ? player : Bukkit.getConsoleSender();
-
-            if (delay == 0) {
-                Bukkit.dispatchCommand(sender, cmd);
+            if (messageType > 0) {
+                if (delay == 0) {
+                    sendMessage(player, messageType, ctn);
+                } else {
+                    int finalMessageType = messageType;
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> sendMessage(player, finalMessageType, ctn), delay * 20L);
+                }
+                executedCommands.add("[message] "+ctn);
             } else {
-                Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.dispatchCommand(sender, cmd), delay*20L);
+                CommandSender sender = runAsPlayer ? player : Bukkit.getConsoleSender();
+                if (delay == 0) {
+                    Bukkit.dispatchCommand(sender, ctn);
+                } else {
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> Bukkit.dispatchCommand(sender, ctn), delay * 20L);
+                }
+                executedCommands.add(ctn);
             }
-
-            executedCommands.add(cmd);
         }
 
         return executedCommands;
+    }
+
+    private void sendMessage(Player player, int messageType, String ctn) {
+        switch (messageType) {
+            case 1:
+                plugin.rawMsg(player, ctn);
+                break;
+            case 2:
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    plugin.rawMsg(p, ctn);
+                }
+                break;
+        }
     }
 
     private void throwError(Player player, String voucher, String reward, String tag) {
