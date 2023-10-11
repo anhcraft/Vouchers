@@ -11,6 +11,7 @@ import dev.anhcraft.vouchers.api.entity.Voucher;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import static org.bukkit.ChatColor.*;
@@ -67,6 +68,35 @@ public class MainCommand extends BaseCommand {
         itemStack.setAmount(amount);
         ItemUtil.addToInventory(op.player, itemStack);
         sender.sendMessage(GREEN + "Given " + amount + " of " + ColorUtil.colorize(voucher.getName()) + GREEN + " to " + op.player.getName());
+    }
+
+    @Subcommand("set exclusivity")
+    @CommandPermission("vouchers.set.exclusivity")
+    @CommandCompletion("@players")
+    public void setExclusivity(Player sender, String exclusivePlayerName) {
+        OfflinePlayer ep = null;
+        if (exclusivePlayerName != null) {
+            ep = Bukkit.getOfflinePlayer(exclusivePlayerName);
+            if (!ep.hasPlayedBefore()) {
+                sender.sendMessage(RED + "That exclusive player has not played before!");
+                return;
+            }
+        }
+        ItemStack item = sender.getInventory().getItemInMainHand();
+        if (ItemUtil.isEmpty(item)) {
+            sender.sendMessage(RED + "You must have an item in your main hand");
+            return;
+        }
+        if (plugin.vouchersManager.scanVoucher(item) == null) {
+            sender.sendMessage(RED + "This item is not a voucher!");
+            return;
+        }
+        item = plugin.vouchersManager.changeExclusivity(item, ep == null ? null : ep.getUniqueId());
+        sender.getInventory().setItemInMainHand(item);
+        if (ep != null)
+            sender.sendMessage(YELLOW + "The item is now exclusive to " + ep.getName());
+        else
+            sender.sendMessage(GREEN + "The item is now publicly usable");
     }
 
     @Subcommand("reset cooldown")
