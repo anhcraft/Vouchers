@@ -5,6 +5,7 @@ import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.parser.ParseException;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
+import dev.anhcraft.jvmkit.utils.EnumUtil;
 import dev.anhcraft.jvmkit.utils.ObjectUtil;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
@@ -20,6 +21,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -152,7 +154,8 @@ public class VouchersManager {
             int delay = 0;
             String permission = null;
 
-            int messageType = 0; // 0: none, 1: message, 2: broadcast
+            int rewardType = 0; // 0: command, 1: message, 2: sound
+            boolean broadcast = false;
 
             int endOfMatcher = 0;
             Matcher m = CONDITION_TAG_PATTERN.matcher(reward);
@@ -167,11 +170,15 @@ public class VouchersManager {
                         break;
                     case "message":
                         plugin.debug(2, "- Message: %s", tag);
-                        messageType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 1 : 0;
+                        rewardType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 1 : 0;
+                        break;
+                    case "sound":
+                        plugin.debug(2, "- Sound: %s", tag);
+                        rewardType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 2 : 0;
                         break;
                     case "broadcast":
                         plugin.debug(2, "- Broadcast: %s", tag);
-                        messageType = (args.length == 1 || args[1].equalsIgnoreCase("true")) ? 2 : 0;
+                        broadcast = args.length == 1 || args[1].equalsIgnoreCase("true");
                         break;
                     case "chance":
                         if (args.length == 1) {
@@ -235,14 +242,22 @@ public class VouchersManager {
             }
             plugin.debug(2, "=> SUCCESS");
 
-            if (messageType > 0) {
+            if (rewardType == 1) {
                 if (delay == 0) {
-                    sendMessage(player, messageType, ctn);
+                    sendMessage(player, broadcast, ctn);
                 } else {
-                    int finalMessageType = messageType;
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> sendMessage(player, finalMessageType, ctn), delay * 20L);
+                    boolean finalBroadcast = broadcast;
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> sendMessage(player, finalBroadcast, ctn), delay * 20L);
                 }
                 executedCommands.add("[message] "+ctn);
+            } else if (rewardType == 2) {
+                if (delay == 0) {
+                    playSound(player, broadcast, ctn);
+                } else {
+                    boolean finalBroadcast = broadcast;
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> playSound(player, finalBroadcast, ctn), delay * 20L);
+                }
+                executedCommands.add("[sound] "+ctn);
             } else {
                 CommandSender sender = runAsPlayer ? player : Bukkit.getConsoleSender();
                 if (delay == 0) {
@@ -257,16 +272,32 @@ public class VouchersManager {
         return executedCommands;
     }
 
-    private void sendMessage(Player player, int messageType, String ctn) {
-        switch (messageType) {
-            case 1:
-                plugin.rawMsg(player, ctn);
-                break;
-            case 2:
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    plugin.rawMsg(p, ctn);
-                }
-                break;
+    private void sendMessage(Player player, boolean broadcast, String ctn) {
+        if (broadcast) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                plugin.rawMsg(p, ctn);
+            }
+        } else {
+            plugin.rawMsg(player, ctn);
+        }
+    }
+
+    private void playSound(Player player, boolean broadcast, String sound) {
+        Sound enumSound = (Sound) EnumUtil.findEnum(Sound.class, sound.toUpperCase());
+        if (enumSound != null) {
+            if (broadcast) {
+                for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), enumSound, 1.0f, 1.0f);
+            } else {
+                player.playSound(player.getLocation(), enumSound, 1.0f, 1.0f);
+            }
+        } else if (sound.matches("[a-z0-9/._-]+")) {
+            if (broadcast) {
+                for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), sound, 1.0f, 1.0f);
+            } else {
+                player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+            }
+        } else {
+            plugin.debug(1, String.format("Invalid sound '%s'", sound));
         }
     }
 
