@@ -21,7 +21,7 @@ public class PluginLogger {
                 .builder()
                 .file(dir.getAbsolutePath()+"/latest.log")
                 .filePattern(dir.getAbsolutePath()+"/%d{yyyyMMdd-HHmmss.SSS}.log")
-                .policy(new SizeBasedRotationPolicy(1024 * 1024 * 10))
+                .policy(new SizeBasedRotationPolicy(1024 * 1024))
                 .compress(true)
                 .policy(DailyRotationPolicy.getInstance())
                 .build();
