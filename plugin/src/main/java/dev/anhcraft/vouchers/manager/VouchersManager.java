@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VouchersManager {
-    private static final Pattern CONDITION_TAG_PATTERN = Pattern.compile("\\[[a-z-]+=[A-Za-z0-9-_.]+]");
+    private static final Pattern CONDITION_TAG_PATTERN = Pattern.compile("\\[[a-z-]+(=[A-Za-z0-9-_.]*)?]");
     private final Vouchers plugin;
     private final Map<String, Voucher> vouchers = new HashMap<>();
     private final NamespacedKey voucherIdentifier;
