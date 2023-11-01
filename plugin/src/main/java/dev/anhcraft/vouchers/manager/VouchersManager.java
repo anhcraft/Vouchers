@@ -19,7 +19,6 @@ import dev.anhcraft.vouchers.util.ConfigHelper;
 import dev.anhcraft.vouchers.util.TimeUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -58,8 +57,8 @@ public class VouchersManager {
             voucherBuilder.description(config.description);
             if (config.customItem != null) {
                 ItemBuilder itemBuilder = config.customItem;
-                if (itemBuilder.material() == Material.AIR) {
-                    itemBuilder.material(config.icon);
+                if (itemBuilder.material().isAir()) {
+                    itemBuilder.material(ObjectUtil.optional(config.icon, plugin.mainConfig.defaultVoucherIcon));
                 }
                 if (itemBuilder.name() == null || itemBuilder.name().isEmpty()) {
                     itemBuilder.name(config.name);
