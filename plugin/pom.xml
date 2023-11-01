@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.anhcraft</groupId>
         <artifactId>vouchers</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <artifactId>vouchers-plugin</artifactId>
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.github.anhcraft</groupId>
             <artifactId>palette</artifactId>
-            <version>v1.0.5</version>
+            <version>v1.0.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -127,12 +127,6 @@
             <groupId>co.aikar</groupId>
             <artifactId>acf-paper</artifactId>
             <version>0.5.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.anhcraft.config</groupId>
-            <artifactId>config.bukkit</artifactId>
-            <version>v1.1.8</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
