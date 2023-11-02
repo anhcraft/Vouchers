@@ -87,32 +87,38 @@ public class VouchersManager {
         return vouchers;
     }
 
-    public boolean preUse(Player player, String id, Voucher voucher) {
+    public int preUse(Player player, String id, Voucher voucher, int expectedBulkSize) {
         plugin.debug(2, "Checking '%s' prerequisite for '%s'", id, player.getName());
 
         var globalUsage = Vouchers.getApi().getServerData().getUsageLimitCount(id);
         var globalUsageLimit = voucher.getUsageLimit().getGlobal();
         plugin.debug(2, "- Global usage limit: %d/%d", globalUsage, globalUsageLimit);
-        if (globalUsageLimit > 0 && globalUsage >= globalUsageLimit) {
+        if (globalUsageLimit > 0 && (expectedBulkSize = Math.min(expectedBulkSize, globalUsageLimit - globalUsage)) < 1) {
             plugin.msg(player, plugin.messageConfig.globalUsageLimit.replace("{max}", String.valueOf(globalUsageLimit)));
-            return false;
+            return 0;
         }
 
         var playerData = Vouchers.getApi().getPlayerData(player);
         var playerUsage = playerData.getUsageLimitCount(id);
         var playerUsageLimit = voucher.getUsageLimit().evaluate(player);
         plugin.debug(2, "- Player usage limit: %d/%d", playerUsage, playerUsageLimit);
-        if (playerUsageLimit > 0 &&playerUsage >= playerUsageLimit) {
+        if (playerUsageLimit > 0 && (expectedBulkSize = Math.min(expectedBulkSize, playerUsageLimit - playerUsage)) < 1) {
             plugin.msg(player, plugin.messageConfig.playerUsageLimit.replace("{max}", String.valueOf(playerUsageLimit)));
-            return false;
+            return 0;
         }
 
-        var nextCooldown = playerData.getLastUsed(id) + voucher.getCooldown().evaluate(player) * 1000L;
-        var remainTime = Math.max(0, (nextCooldown - System.currentTimeMillis()) / 1000);
-        plugin.debug(2, "- Cooldown remain: %d", remainTime);
-        if (remainTime > 0) {
-            plugin.msg(player, plugin.messageConfig.inCooldown.replace("{time}", TimeUtils.format(remainTime)));
-            return false;
+        var cooldown = voucher.getCooldown().evaluate(player);
+        if (cooldown > 0) {
+            var nextCooldown = playerData.getLastUsed(id) + cooldown * 1000L;
+            var remainTime = Math.max(0, (nextCooldown - System.currentTimeMillis()) / 1000);
+            plugin.debug(2, "- Cooldown remain: %d", remainTime);
+            if (remainTime > 0) {
+                plugin.msg(player, plugin.messageConfig.inCooldown.replace("{time}", TimeUtils.format(remainTime)));
+                return 0;
+            }
+            // If cooldown exists, then we cannot bulk open
+            expectedBulkSize = 1;
+            // TODO An option to allow bypass cooldown in bulk?
         }
 
         var condition = voucher.getCondition();
@@ -125,16 +131,16 @@ public class VouchersManager {
                 var expression = new Expression(condition.replace("'", "\"")).evaluate();
                 if (!expression.isBooleanValue() || !expression.getBooleanValue()) {
                     plugin.msg(player, plugin.messageConfig.conditionNotSatisfied);
-                    return false;
+                    return 0;
                 }
             } catch (EvaluationException | ParseException e) {
                 plugin.debug(2, "- Failed to evaluate condition: %s", condition);
                 plugin.msg(player, plugin.messageConfig.conditionNotSatisfied);
-                return false;
+                return 0;
             }
         }
 
-        return true;
+        return expectedBulkSize;
     }
 
     public List<String> onUse(Player player, Voucher voucher) {

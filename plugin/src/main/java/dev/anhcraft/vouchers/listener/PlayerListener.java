@@ -48,17 +48,17 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (!plugin.vouchersManager.preUse(e.getPlayer(), id, voucher)) {
+        int expectedBulkSize = 1;
+
+        if (e.getPlayer().isSneaking() && e.getPlayer().hasPermission("vouchers.redeem.bulk"))
+            expectedBulkSize = item.getAmount();
+
+        int actualBulkSize;
+        if ((actualBulkSize = plugin.vouchersManager.preUse(e.getPlayer(), id, voucher, expectedBulkSize)) < 1) {
             return;
         }
 
-        int expectedBulkSize = 1;
-
-        if (e.getPlayer().isSneaking() && e.getPlayer().hasPermission("vouchers.redeem.bulk")) {
-            expectedBulkSize = item.getAmount();
-        }
-
-        VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item, expectedBulkSize);
+        VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item, expectedBulkSize, actualBulkSize);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             plugin.pluginLogger.scope("redeem")
@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
                     .add("voucher", id)
                     .add("virtual", false)
                     .add("expectedBulk", expectedBulkSize)
-                    .add("actualBulk", 0)
+                    .add("actualBulk", actualBulkSize)
                     .add("success", false)
                     .add("error", "cancelled")
                     .flush();
@@ -74,9 +74,8 @@ public class PlayerListener implements Listener {
         }
 
         List<String> executedCommands = new ArrayList<>();
-        int actualBulkSize = 0;
 
-        while (actualBulkSize++ < expectedBulkSize) {
+        for (int i = 0; i < actualBulkSize; i++) {
             executedCommands.addAll(plugin.vouchersManager.onUse(e.getPlayer(), voucher));
         }
 

@@ -15,13 +15,15 @@ public class VoucherRedeemEvent extends PlayerEvent implements Cancellable {
     private final Voucher voucher;
     private final ItemStack itemStack;
     private final int expectedBulkSize;
+    private final int actualBulkSize;
     private boolean cancelled;
 
-    public VoucherRedeemEvent(@NotNull Player who, Voucher voucher, ItemStack itemStack, int expectedBulkSize) {
+    public VoucherRedeemEvent(@NotNull Player who, Voucher voucher, ItemStack itemStack, int expectedBulkSize, int actualBulkSize) {
         super(who);
         this.voucher = voucher;
         this.itemStack = itemStack;
         this.expectedBulkSize = expectedBulkSize;
+        this.actualBulkSize = actualBulkSize;
     }
 
     @NotNull
@@ -40,10 +42,18 @@ public class VoucherRedeemEvent extends PlayerEvent implements Cancellable {
 
     /**
      * Gets the expected size of bulk operation
-     * @return bulk size (typically 1)
+     * @return bulk size
      */
     public int getExpectedBulkSize() {
         return expectedBulkSize;
+    }
+
+    /**
+     * Gets the actual size of bulk operation
+     * @return bulk size
+     */
+    public int getActualBulkSize() {
+        return actualBulkSize;
     }
 
     @NotNull
