@@ -32,8 +32,9 @@ public interface PlayerData extends Modifiable, Versioned {
     /**
      * Increases the usage limit count.
      * @param voucherId the voucher ID
+     * @param delta the addition
      */
-    default void increaseUsageLimitCount(String voucherId) {
-        setUsageLimitCount(voucherId, getUsageLimitCount(voucherId) + 1);
+    default void increaseUsageLimitCount(String voucherId, int delta) {
+        setUsageLimitCount(voucherId, getUsageLimitCount(voucherId) + delta);
     }
 }

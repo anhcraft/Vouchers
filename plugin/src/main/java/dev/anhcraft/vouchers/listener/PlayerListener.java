@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,44 +52,66 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item);
+        int expectedBulkSize = 1;
+
+        if (e.getPlayer().isSneaking() && e.getPlayer().hasPermission("vouchers.redeem.bulk")) {
+            expectedBulkSize = item.getAmount();
+        }
+
+        VoucherRedeemEvent event = new VoucherRedeemEvent(e.getPlayer(), voucher, item, expectedBulkSize);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             plugin.pluginLogger.scope("redeem")
                     .add("player", e.getPlayer())
                     .add("voucher", id)
                     .add("virtual", false)
+                    .add("expectedBulk", expectedBulkSize)
+                    .add("actualBulk", 0)
                     .add("success", false)
                     .add("error", "cancelled")
                     .flush();
             return;
         }
 
-        List<String> executedCommands = plugin.vouchersManager.onUse(e.getPlayer(), voucher);
+        List<String> executedCommands = new ArrayList<>();
+        int actualBulkSize = 0;
+
+        while (actualBulkSize++ < expectedBulkSize) {
+            executedCommands.addAll(plugin.vouchersManager.onUse(e.getPlayer(), voucher));
+        }
+
         if (executedCommands.isEmpty() && plugin.mainConfig.preventNoRewards) {
             plugin.msg(e.getPlayer(), plugin.messageConfig.noRewardsGiven);
             plugin.pluginLogger.scope("redeem")
                     .add("player", e.getPlayer())
                     .add("voucher", id)
                     .add("virtual", false)
+                    .add("expectedBulk", expectedBulkSize)
+                    .add("actualBulk", actualBulkSize)
                     .add("success", false)
                     .add("error", "empty")
                     .flush();
             return;
         }
-        if (item.getAmount() == 1)
+        // TODO For bulk operation, notice player about successful & failed attempts?
+
+        int remainAmount = item.getAmount() - actualBulkSize;
+        if (remainAmount == 0)
             e.getPlayer().getInventory().setItemInMainHand(null);
         else {
-            item.setAmount(item.getAmount() - 1);
+            item.setAmount(remainAmount);
             e.getPlayer().getInventory().setItemInMainHand(item);
         }
+
         plugin.pluginLogger.scope("redeem")
                 .add("player", e.getPlayer())
                 .add("voucher", id)
                 .add("virtual", false)
+                .add("expectedBulk", expectedBulkSize)
+                .add("actualBulk", actualBulkSize)
                 .add("success", true)
                 .add("commands", executedCommands)
                 .flush();
-        plugin.vouchersManager.postUse(e.getPlayer(), id, voucher);
+        plugin.vouchersManager.postUse(e.getPlayer(), id, voucher, actualBulkSize);
     }
 }

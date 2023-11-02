@@ -307,17 +307,19 @@ public class VouchersManager {
         ));
     }
 
-    public void postUse(Player player, String id, Voucher voucher) {
+    public void postUse(Player player, String id, Voucher voucher, int bulkSize) {
         for (String str : plugin.messageConfig.defaultUseMessage) {
-            plugin.rawMsg(player, str.replace("{voucher-name}", voucher.getName()));
+            plugin.rawMsg(player, str
+                    .replace("{voucher-name}", voucher.getName())
+                    .replace("{bulk-size}", String.valueOf(bulkSize)));
         }
         player.playSound(player.getLocation(), plugin.mainConfig.defaultUseSound, 1.0f, 1.0f);
         PlayerData pd = Vouchers.getApi().getPlayerData(player);
         pd.setLastUsed(id, System.currentTimeMillis());
-        pd.increaseUsageLimitCount(id);
+        pd.increaseUsageLimitCount(id, bulkSize);
         ServerData sd = Vouchers.getApi().getServerData();
         sd.increaseUsageCount(id);
-        sd.increaseUsageLimitCount(id);
+        sd.increaseUsageLimitCount(id, bulkSize);
     }
 
     public ItemStack buildVoucher(String id, Voucher voucher) {

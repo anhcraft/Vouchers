@@ -1,7 +1,7 @@
 prefix: "&e[Vouchers] "
 default-use-message:
   - ""
-  - "&eYou have used: {voucher-name}"
+  - "&eYou have used x{bulk-size} {voucher-name}"
   - ""
 no-rewards-given: "&cNo rewards given. Try again!"
 invalid-voucher: "&cThis voucher no longer exists"
