@@ -28,6 +28,7 @@ aid-kit:
     default: 3
     vip: 5
     mvp: 10
+  double-check: true
 exclusive-armor:
   icon: ender_chest
   name: "&#666666Exclusive Armor Set"

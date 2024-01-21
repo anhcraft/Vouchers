@@ -18,6 +18,7 @@ public class Voucher {
     private final GroupSettings usageLimit;
     private final GroupSettings cooldown;
     private final String condition;
+    private final boolean doubleCheck;
 
     public Voucher(@NotNull Material icon,
                    @NotNull String name,
@@ -25,7 +26,7 @@ public class Voucher {
                    @NotNull String[] rewards,
                    @Nullable ItemStack customItem,
                    @NotNull GroupSettings usageLimit, @NotNull GroupSettings cooldown,
-                   @Nullable String condition) {
+                   @Nullable String condition, boolean doubleCheck) {
         this.icon = icon;
         this.name = name;
         this.description = description;
@@ -34,6 +35,7 @@ public class Voucher {
         this.usageLimit = usageLimit;
         this.cooldown = cooldown;
         this.condition = condition;
+        this.doubleCheck = doubleCheck;
     }
 
     @NotNull
@@ -76,6 +78,10 @@ public class Voucher {
         return condition;
     }
 
+    public boolean shouldDoubleCheck() {
+        return doubleCheck;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,12 +94,13 @@ public class Voucher {
                 Objects.equals(customItem, voucher.customItem) &&
                 Objects.equals(usageLimit, voucher.usageLimit) &&
                 Objects.equals(cooldown, voucher.cooldown) &&
-                Objects.equals(condition, voucher.condition);
+                Objects.equals(condition, voucher.condition) &&
+                Objects.equals(doubleCheck, voucher.doubleCheck);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(icon, name, customItem, usageLimit, cooldown, condition);
+        int result = Objects.hash(icon, name, customItem, usageLimit, cooldown, condition, doubleCheck);
         result = 31 * result + Arrays.hashCode(description);
         result = 31 * result + Arrays.hashCode(rewards);
         return result;

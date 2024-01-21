@@ -30,6 +30,8 @@ public class MainConfig {
     @Exclude
     public SimpleDateFormat dateTimeFormat;
 
+    public int doubleCheckTimeout;
+
     @PostHandler
     private void handle() {
         dateTimeFormat = new SimpleDateFormat(dateFormat);

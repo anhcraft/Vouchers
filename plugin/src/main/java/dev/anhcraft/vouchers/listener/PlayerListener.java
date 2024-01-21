@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,6 +24,11 @@ public class PlayerListener implements Listener {
 
     public PlayerListener(Vouchers plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    private void quit(PlayerQuitEvent e) {
+        plugin.vouchersManager.cleanData(e.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

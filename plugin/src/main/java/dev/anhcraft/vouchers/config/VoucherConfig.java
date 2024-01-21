@@ -35,4 +35,6 @@ public class VoucherConfig {
 
     @Nullable
     public String condition;
+
+    public boolean doubleCheck;
 }

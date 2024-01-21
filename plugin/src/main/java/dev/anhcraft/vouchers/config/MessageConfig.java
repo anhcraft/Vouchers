@@ -26,4 +26,7 @@ public class MessageConfig {
 
     @Optional
     public String exclusivityNotSatisfied = "&cThis voucher is exclusive to someone else. You cannot use it!";
+
+    @Optional
+    public String doubleCheck = "&bRight-click the voucher again to confirm!";
 }

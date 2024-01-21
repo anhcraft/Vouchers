@@ -7,6 +7,7 @@ import com.jeff_media.morepersistentdatatypes.DataType;
 import dev.anhcraft.config.bukkit.utils.ItemBuilder;
 import dev.anhcraft.jvmkit.utils.EnumUtil;
 import dev.anhcraft.jvmkit.utils.ObjectUtil;
+import dev.anhcraft.jvmkit.utils.PresentPair;
 import dev.anhcraft.palette.util.ItemUtil;
 import dev.anhcraft.vouchers.Vouchers;
 import dev.anhcraft.vouchers.api.data.PlayerData;
@@ -38,6 +39,7 @@ public class VouchersManager {
     private static final Pattern CONDITION_TAG_PATTERN = Pattern.compile("\\[[a-z-]+(=[A-Za-z0-9-_.]*)?]");
     private final Vouchers plugin;
     private final Map<String, Voucher> vouchers = new HashMap<>();
+    private final Map<PresentPair<UUID, String>, Long> doubleCheckQueue = new HashMap<>();
     private final NamespacedKey voucherIdentifier;
     private final NamespacedKey exclusivePlayerIdentifier;
 
@@ -45,6 +47,10 @@ public class VouchersManager {
         this.plugin = plugin;
         voucherIdentifier = new NamespacedKey(plugin, "voucher");
         exclusivePlayerIdentifier = new NamespacedKey(plugin, "exclusive-player");
+    }
+
+    public void cleanData(UUID player) {
+        doubleCheckQueue.keySet().removeIf(p -> p.getFirst().equals(player));
     }
 
     public void reload(YamlConfiguration vouchersConfig) {
@@ -78,6 +84,7 @@ public class VouchersManager {
                 voucherBuilder.usageLimit(GroupSettings.of(GroupSettings.USAGE_LIMIT_PERM, config.usageLimit, true));
             }
             voucherBuilder.condition(config.condition);
+            voucherBuilder.doubleCheck(config.doubleCheck);
             vouchers.put(id, voucherBuilder.build());
         }
         plugin.getLogger().info("Loaded " + vouchers.size() + " vouchers");
@@ -138,6 +145,17 @@ public class VouchersManager {
                 plugin.msg(player, plugin.messageConfig.conditionNotSatisfied);
                 return 0;
             }
+        }
+
+        if (voucher.shouldDoubleCheck()) {
+            PresentPair<UUID, String> p = new PresentPair<>(player.getUniqueId(), id);
+            Long v = doubleCheckQueue.get(p);
+            if (v != null && v >= System.currentTimeMillis()) {
+                return expectedBulkSize;
+            }
+            plugin.msg(player, plugin.messageConfig.doubleCheck);
+            doubleCheckQueue.put(p, System.currentTimeMillis() + plugin.mainConfig.doubleCheckTimeout * 1000L);
+            return 0;
         }
 
         return expectedBulkSize;
