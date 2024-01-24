@@ -4,3 +4,4 @@ main: dev.anhcraft.vouchers.Vouchers
 api-version: '1.14'
 depend:
   - PlaceholderAPI
+folia-supported: true

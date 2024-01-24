@@ -270,6 +270,7 @@ public class VouchersManager {
                     sendMessage(player, broadcast, ctn);
                 } else {
                     boolean finalBroadcast = broadcast;
+                    // TODO localize schedule to the player's region (Folia)
                     Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> sendMessage(player, finalBroadcast, ctn), delay * 20L);
                 }
                 executedCommands.add("[message] "+ctn);
@@ -278,6 +279,7 @@ public class VouchersManager {
                     playSound(player, broadcast, ctn);
                 } else {
                     boolean finalBroadcast = broadcast;
+                    // TODO localize schedule to the player's region (Folia)
                     Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> playSound(player, finalBroadcast, ctn), delay * 20L);
                 }
                 executedCommands.add("[sound] "+ctn);
