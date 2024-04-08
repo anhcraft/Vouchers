@@ -49,4 +49,15 @@ public class ServerDataImpl implements ServerData {
         else config.usageCount.remove(voucherId);
         config.markDirty();
     }
+
+    @Override
+    public void usePhysicalId(String id) {
+        if (config.physicalIdUsed.add(id))
+            config.markDirty();
+    }
+
+    @Override
+    public boolean isPhysicalIdUsed(String id) {
+        return config.physicalIdUsed.contains(id);
+    }
 }

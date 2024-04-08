@@ -46,4 +46,17 @@ public interface ServerData extends Modifiable, Versioned {
     default void increaseUsageCount(String voucherId) {
         setUsageCount(voucherId, getUsageCount(voucherId) + 1);
     }
+
+    /**
+     * Marks a physical id as used.
+     * @param id physical id
+     */
+    void usePhysicalId(String id);
+
+    /**
+     * Checks whether the given physical id has been used.
+     * @param id physical id
+     * @return whether the given physical id has been used
+     */
+    boolean isPhysicalIdUsed(String id);
 }

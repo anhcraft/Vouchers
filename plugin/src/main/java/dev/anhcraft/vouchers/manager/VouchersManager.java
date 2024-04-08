@@ -41,11 +41,13 @@ public class VouchersManager {
     private final Map<String, Voucher> vouchers = new HashMap<>();
     private final Map<PresentPair<UUID, String>, Long> doubleCheckQueue = new HashMap<>();
     private final NamespacedKey voucherIdentifier;
+    private final NamespacedKey physicalIdentifier;
     private final NamespacedKey exclusivePlayerIdentifier;
 
     public VouchersManager(Vouchers plugin) {
         this.plugin = plugin;
         voucherIdentifier = new NamespacedKey(plugin, "voucher");
+        physicalIdentifier = new NamespacedKey(plugin, "physical-id");
         exclusivePlayerIdentifier = new NamespacedKey(plugin, "exclusive-player");
     }
 
@@ -61,6 +63,7 @@ public class VouchersManager {
             voucherBuilder.icon(ObjectUtil.optional(config.icon, plugin.mainConfig.defaultVoucherIcon));
             voucherBuilder.name(config.name);
             voucherBuilder.description(config.description);
+            voucherBuilder.physicalId(config.physicalId);
             if (config.customItem != null) {
                 ItemBuilder itemBuilder = config.customItem;
                 if (itemBuilder.material().isAir()) {
@@ -94,8 +97,15 @@ public class VouchersManager {
         return vouchers;
     }
 
-    public int preUse(Player player, String id, Voucher voucher, int expectedBulkSize) {
+    public int preUse(Player player, String id, String physicalId, Voucher voucher, int expectedBulkSize) {
         plugin.debug(2, "Checking '%s' prerequisite for '%s'", id, player.getName());
+
+        if (voucher.hasPhysicalId()) {
+            if (Vouchers.getApi().getServerData().isPhysicalIdUsed(physicalId)) {
+                plugin.msg(player, plugin.messageConfig.physicalVoucherUsed);
+                return 0;
+            }
+        }
 
         var globalUsage = Vouchers.getApi().getServerData().getUsageLimitCount(id);
         var globalUsageLimit = voucher.getUsageLimit().getGlobal();
@@ -333,7 +343,7 @@ public class VouchersManager {
         ));
     }
 
-    public void postUse(Player player, String id, Voucher voucher, int bulkSize) {
+    public void postUse(Player player, String id, String physicalId, Voucher voucher, int bulkSize) {
         for (String str : plugin.messageConfig.defaultUseMessage) {
             plugin.rawMsg(player, str
                     .replace("{voucher-name}", voucher.getName())
@@ -346,6 +356,8 @@ public class VouchersManager {
         ServerData sd = Vouchers.getApi().getServerData();
         sd.increaseUsageCount(id);
         sd.increaseUsageLimitCount(id, bulkSize);
+        if (voucher.hasPhysicalId() && physicalId != null)
+            sd.usePhysicalId(physicalId);
     }
 
     public ItemStack buildVoucher(String id, Voucher voucher) {
@@ -361,8 +373,15 @@ public class VouchersManager {
             item = itemBuilder.build();
         }
         ItemMeta meta = item.getItemMeta();
-        meta.getPersistentDataContainer().set(voucherIdentifier, PersistentDataType.STRING, id);
-        item.setItemMeta(meta);
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(voucherIdentifier, PersistentDataType.STRING, id);
+            if (voucher.hasPhysicalId()) {
+                String physicalId = id + "/" + System.currentTimeMillis() + "/" +
+                  ThreadLocalRandom.current().nextInt(1000, 10000);
+                meta.getPersistentDataContainer().set(physicalIdentifier, PersistentDataType.STRING, physicalId);
+            }
+            item.setItemMeta(meta);
+        }
         return item;
     }
 
@@ -400,5 +419,14 @@ public class VouchersManager {
             meta.getPersistentDataContainer().remove(exclusivePlayerIdentifier);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public String getPhysicalId(ItemStack item) {
+        if (ItemUtil.isEmpty(item))
+            return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null)
+            return null;
+        return meta.getPersistentDataContainer().get(physicalIdentifier, PersistentDataType.STRING);
     }
 }

@@ -29,4 +29,7 @@ public class MessageConfig {
 
     @Optional
     public String doubleCheck = "&bRight-click the voucher again to confirm!";
+
+    @Optional
+    public String physicalVoucherUsed = "&cThis voucher has been used before! Dupe?";
 }

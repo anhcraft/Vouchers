@@ -54,13 +54,15 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        String physicalId = plugin.vouchersManager.getPhysicalId(item);
+
         int expectedBulkSize = 1;
 
         if (e.getPlayer().isSneaking() && e.getPlayer().hasPermission("vouchers.redeem.bulk"))
             expectedBulkSize = item.getAmount();
 
         int actualBulkSize;
-        if ((actualBulkSize = plugin.vouchersManager.preUse(e.getPlayer(), id, voucher, expectedBulkSize)) < 1) {
+        if ((actualBulkSize = plugin.vouchersManager.preUse(e.getPlayer(), id, physicalId, voucher, expectedBulkSize)) < 1) {
             return;
         }
 
@@ -71,6 +73,7 @@ public class PlayerListener implements Listener {
                     .add("player", e.getPlayer())
                     .add("voucher", id)
                     .add("virtual", false)
+                    .add("physicalId", physicalId)
                     .add("expectedBulk", expectedBulkSize)
                     .add("actualBulk", actualBulkSize)
                     .add("success", false)
@@ -117,6 +120,6 @@ public class PlayerListener implements Listener {
                 .add("success", true)
                 .add("commands", executedCommands)
                 .flush();
-        plugin.vouchersManager.postUse(e.getPlayer(), id, voucher, actualBulkSize);
+        plugin.vouchersManager.postUse(e.getPlayer(), id, physicalId, voucher, actualBulkSize);
     }
 }

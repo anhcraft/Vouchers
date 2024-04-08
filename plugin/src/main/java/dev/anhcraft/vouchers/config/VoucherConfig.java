@@ -37,4 +37,6 @@ public class VoucherConfig {
     public String condition;
 
     public boolean doubleCheck;
+
+    public boolean physicalId;
 }

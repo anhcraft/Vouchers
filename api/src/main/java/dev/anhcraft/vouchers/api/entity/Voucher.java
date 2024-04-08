@@ -19,6 +19,7 @@ public class Voucher {
     private final GroupSettings cooldown;
     private final String condition;
     private final boolean doubleCheck;
+    private final boolean physicalId;
 
     public Voucher(@NotNull Material icon,
                    @NotNull String name,
@@ -27,6 +28,16 @@ public class Voucher {
                    @Nullable ItemStack customItem,
                    @NotNull GroupSettings usageLimit, @NotNull GroupSettings cooldown,
                    @Nullable String condition, boolean doubleCheck) {
+        this(icon, name, description, rewards, customItem, usageLimit, cooldown, condition, doubleCheck, false);
+    }
+
+    public Voucher(@NotNull Material icon,
+                   @NotNull String name,
+                   @NotNull String[] description,
+                   @NotNull String[] rewards,
+                   @Nullable ItemStack customItem,
+                   @NotNull GroupSettings usageLimit, @NotNull GroupSettings cooldown,
+                   @Nullable String condition, boolean doubleCheck, boolean physicalId) {
         this.icon = icon;
         this.name = name;
         this.description = description;
@@ -36,6 +47,7 @@ public class Voucher {
         this.cooldown = cooldown;
         this.condition = condition;
         this.doubleCheck = doubleCheck;
+        this.physicalId = physicalId;
     }
 
     @NotNull
@@ -80,6 +92,10 @@ public class Voucher {
 
     public boolean shouldDoubleCheck() {
         return doubleCheck;
+    }
+
+    public boolean hasPhysicalId() {
+        return physicalId;
     }
 
     @Override

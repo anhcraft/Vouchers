@@ -46,7 +46,9 @@ public interface VouchersApi {
     Voucher getVoucher(@Nullable String id);
 
     /**
-     * Builds a voucher item given its id.
+     * Builds a voucher item given its id.<br>
+     * If the voucher has physical identification enabled, each instance returned by this method has a unique physical
+     * id generated,
      * @param id the id
      * @return the item
      */
