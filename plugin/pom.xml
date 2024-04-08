@@ -66,10 +66,6 @@
                                     <shadedPattern>dev.anhcraft.vouchers.lib.rfos</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>dev.anhcraft.vouchers.lib.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.intellij</pattern>
                                     <shadedPattern>dev.anhcraft.vouchers.lib.intellij</shadedPattern>
                                 </relocation>
@@ -133,6 +129,13 @@
             <groupId>com.vlkan.rfos</groupId>
             <artifactId>rotating-fos</artifactId>
             <version>0.9.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <!-- Fix logging error caused by rfos -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.9</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
