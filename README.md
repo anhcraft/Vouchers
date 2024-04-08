@@ -28,7 +28,7 @@ Visit the [wiki](https://anhcraft.gitbook.io/vouchers/) to know how to use the p
 
 ## Community
 
-Join my support server: https://discord.gg/gPJtP4yJgc
+Join my support server: https://discord.gg/HRAEKapRwx
 
 ## License
 
