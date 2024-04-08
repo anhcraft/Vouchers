@@ -61,12 +61,23 @@ public class MainCommand extends BaseCommand {
             sender.sendMessage(RED + "Voucher not found: " + voucherId);
             return;
         }
-        ItemStack itemStack = plugin.vouchersManager.buildVoucher(voucherId, voucher);
-        if (exclusivePlayer != null) {
-            itemStack = plugin.vouchersManager.changeExclusivity(itemStack, exclusivePlayer.getUniqueId());
+        if (voucher.hasPhysicalId()) {
+            for (int i = 0; i < amount; i++) {
+                ItemStack itemStack = plugin.vouchersManager.buildVoucher(voucherId, voucher);
+                if (exclusivePlayer != null) {
+                    itemStack = plugin.vouchersManager.changeExclusivity(itemStack, exclusivePlayer.getUniqueId());
+                }
+                itemStack.setAmount(1);
+                ItemUtil.addToInventory(op.player, itemStack);
+            }
+        } else {
+            ItemStack itemStack = plugin.vouchersManager.buildVoucher(voucherId, voucher);
+            if (exclusivePlayer != null) {
+                itemStack = plugin.vouchersManager.changeExclusivity(itemStack, exclusivePlayer.getUniqueId());
+            }
+            itemStack.setAmount(amount);
+            ItemUtil.addToInventory(op.player, itemStack);
         }
-        itemStack.setAmount(amount);
-        ItemUtil.addToInventory(op.player, itemStack);
         sender.sendMessage(GREEN + "Given " + amount + " of " + ColorUtil.colorize(voucher.getName()) + GREEN + " to " + op.player.getName());
     }
 
