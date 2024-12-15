@@ -1,9 +1,11 @@
 package dev.anhcraft.vouchers;
 
-import dev.anhcraft.vouchers.api.entity.Voucher;
 import dev.anhcraft.vouchers.api.VouchersApi;
 import dev.anhcraft.vouchers.api.data.PlayerData;
 import dev.anhcraft.vouchers.api.data.ServerData;
+import dev.anhcraft.vouchers.api.entity.Voucher;
+import dev.anhcraft.vouchers.api.entity.VoucherCode;
+import dev.anhcraft.vouchers.storage.server.ServerDataConfig;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +62,60 @@ public class VouchersApiImpl implements VouchersApi {
     }
 
     @Override
+    public @Nullable VoucherCode getVoucherCode(@Nullable String code) {
+        return toVoucherCode(code, plugin.serverDataManager.getData().getVoucherCodes().get(code));
+    }
+
+    @Override
+    public @NotNull List<VoucherCode> getVoucherCodesByVoucher(@NotNull String id) {
+        List<VoucherCode> codes = new ArrayList<>();
+        for (Map.Entry<String, ServerDataConfig.VoucherCodeDataConfig> cfg : plugin.serverDataManager.getData().getVoucherCodes().entrySet()) {
+            if (!cfg.getValue().voucher.equals(id))
+                continue;
+            VoucherCode voucherCode = toVoucherCode(cfg.getKey(), cfg.getValue());
+            if (voucherCode != null)
+                codes.add(voucherCode);
+        }
+        return Collections.unmodifiableList(codes);
+    }
+
+    @Override
+    public @NotNull List<VoucherCode> getVoucherCodesByIssuer(@NotNull UUID issuer) {
+        List<VoucherCode> codes = new ArrayList<>();
+        for (Map.Entry<String, ServerDataConfig.VoucherCodeDataConfig> cfg : plugin.serverDataManager.getData().getVoucherCodes().entrySet()) {
+            if (!cfg.getValue().issuer.equals(issuer))
+                continue;
+            VoucherCode voucherCode = toVoucherCode(cfg.getKey(), cfg.getValue());
+            if (voucherCode != null)
+                codes.add(voucherCode);
+        }
+        return Collections.unmodifiableList(codes);
+    }
+
+    @Override
+    public @NotNull List<VoucherCode> getVoucherCodesByUser(@NotNull UUID user) {
+        List<VoucherCode> codes = new ArrayList<>();
+        for (Map.Entry<String, ServerDataConfig.VoucherCodeDataConfig> cfg : plugin.serverDataManager.getData().getVoucherCodes().entrySet()) {
+            if (cfg.getValue().user == null || !cfg.getValue().user.equals(user))
+                continue;
+            VoucherCode voucherCode = toVoucherCode(cfg.getKey(), cfg.getValue());
+            if (voucherCode != null)
+                codes.add(voucherCode);
+        }
+        return Collections.unmodifiableList(codes);
+    }
+
+    @Override
+    public @NotNull VoucherCode generateVoucherCode(@NotNull Voucher voucher, @NotNull UUID issuer, boolean pseudo) {
+        return null;
+    }
+
+    @Override
+    public boolean publishVoucherCode(@NotNull VoucherCode code) {
+        return false;
+    }
+
+    @Override
     public @NotNull PlayerData getPlayerData(@NotNull Player player) {
         return plugin.playerDataManager.getData(player);
     }
@@ -77,5 +133,25 @@ public class VouchersApiImpl implements VouchersApi {
     @Override
     public @NotNull ServerData getServerData() {
         return plugin.serverDataManager.getData();
+    }
+
+    // ---- INTERNAL
+
+    private @Nullable VoucherCode toVoucherCode(@Nullable String code, @Nullable ServerDataConfig.VoucherCodeDataConfig cfg) {
+        if (code == null || cfg == null) {
+            return null;
+        }
+        Voucher voucher = getVoucher(cfg.voucher);
+        if (voucher == null) {
+            return null;
+        }
+        return new VoucherCode(
+                code,
+                voucher,
+                cfg.issuer,
+                cfg.user,
+                new Date(cfg.issueDate),
+                cfg.redeemDate == null ? null : new Date(cfg.redeemDate)
+        );
     }
 }

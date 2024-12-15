@@ -3,6 +3,8 @@ package dev.anhcraft.vouchers.storage.server;
 import com.google.common.base.Preconditions;
 import dev.anhcraft.vouchers.api.data.ServerData;
 
+import java.util.Map;
+
 public class ServerDataImpl implements ServerData {
     private final ServerDataConfig config;
 
@@ -59,5 +61,9 @@ public class ServerDataImpl implements ServerData {
     @Override
     public boolean isPhysicalIdUsed(String id) {
         return config.physicalIdUsed.contains(id);
+    }
+
+    public Map<String, ServerDataConfig.VoucherCodeDataConfig> getVoucherCodes() {
+        return config.voucherCodes;
     }
 }

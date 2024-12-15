@@ -8,5 +8,13 @@ prevent-no-rewards: false
 ignore-denied-interact: false
 date-format: "dd/MM/yyyy HH:mm:ss"
 double-check-timeout: 3
+voucher-code:
+  length: 6
+  chars: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  anti-brute-force:
+    enabled: true
+    max-failed-attempts: 3
+    block-redemption-cooldown: 3600
+    reset-counter-cooldown: 180
 dev-mode: false
 debug-level: 0

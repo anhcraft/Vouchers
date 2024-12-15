@@ -5,11 +5,9 @@ import dev.anhcraft.config.annotations.Exclude;
 import dev.anhcraft.config.annotations.Optional;
 import dev.anhcraft.config.annotations.PostHandler;
 import dev.anhcraft.vouchers.Vouchers;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Configurable
@@ -33,4 +31,16 @@ public class ServerDataConfig {
     public Map<String, Integer> usageCount = new HashMap<>(3);
     @Optional
     public Set<String> physicalIdUsed = new HashSet<>();
+    @Optional
+    public Map<String, VoucherCodeDataConfig> voucherCodes = new HashMap<>();
+
+    public static class VoucherCodeDataConfig {
+        public String voucher;
+        public UUID issuer;
+        @Nullable
+        public UUID user;
+        public long issueDate;
+        @Nullable
+        public Long redeemDate;
+    }
 }

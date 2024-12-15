@@ -3,6 +3,7 @@ package dev.anhcraft.vouchers.api;
 import dev.anhcraft.vouchers.api.data.PlayerData;
 import dev.anhcraft.vouchers.api.data.ServerData;
 import dev.anhcraft.vouchers.api.entity.Voucher;
+import dev.anhcraft.vouchers.api.entity.VoucherCode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -93,6 +94,67 @@ public interface VouchersApi {
      */
     @Nullable
     UUID getExclusivePlayer(@Nullable ItemStack item);
+
+    /**
+     * Gets the voucher code given the code.
+     * @param code voucher code
+     * @return voucher code, or {@code null} if not found
+     */
+    @Nullable
+    VoucherCode getVoucherCode(@Nullable String code);
+
+    /**
+     * Gets all voucher codes given the voucher id.
+     * @param id voucher id
+     * @return immutable list of voucher codes
+     */
+    @NotNull
+    List<VoucherCode> getVoucherCodesByVoucher(@NotNull String id);
+
+    /**
+     * Gets all voucher codes given the issuer.
+     * @param issuer the ID of player who issued
+     * @return immutable list of voucher codes
+     */
+    @NotNull
+    List<VoucherCode> getVoucherCodesByIssuer(@NotNull UUID issuer);
+
+    /**
+     * Gets all voucher codes given the user.
+     * @param user the ID of player who used
+     * @return immutable list of voucher codes
+     */
+    @NotNull
+    List<VoucherCode> getVoucherCodesByUser(@NotNull UUID user);
+
+    /**
+     * Generate a new voucher code.
+     * @param voucher the voucher
+     * @param issuer the ID of player who issued
+     * @param pseudo if {@code true}, the code will not be saved, thus cannot be used.
+     *               To save, use {@link #publishVoucherCode(VoucherCode)}
+     * @return the voucher code
+     */
+    @NotNull
+    VoucherCode generateVoucherCode(@NotNull Voucher voucher, @NotNull UUID issuer, boolean pseudo);
+
+    /**
+     * Publish the voucher code.<br>
+     * The voucher code must not be generated before.
+     * @param code the voucher code
+     * @return {@code true} if success
+     */
+    boolean publishVoucherCode(@NotNull VoucherCode code);
+
+    /**
+     * Redeems the voucher code.<br>
+     * The voucher code must exist and not be redeemed before.<br>
+     * This method does not reward the user.
+     * @param code the voucher code
+     * @param user the ID of player who redeemed
+     * @return {@code true} if success
+     */
+    boolean redeemVoucherCode(@NotNull String code, UUID user);
 
     /**
      * Gets player data of an online player.<br>

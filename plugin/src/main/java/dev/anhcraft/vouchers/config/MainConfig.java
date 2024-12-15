@@ -32,6 +32,8 @@ public class MainConfig {
 
     public int doubleCheckTimeout;
 
+    public VoucherCodeConfig voucherCode;
+
     @PostHandler
     private void handle() {
         dateTimeFormat = new SimpleDateFormat(dateFormat);
