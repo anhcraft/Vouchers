@@ -25,6 +25,7 @@ Visit the [wiki](https://anhcraft.gitbook.io/vouchers/) to know how to use the p
 - Polymart: https://polymart.org/resource/vouchers.4848
 - BuiltByBit: https://builtbybit.com/resources/vouchers.32488
 - Modrinth: https://modrinth.com/plugin/vouchers
+- Hangar: https://hangar.papermc.io/anhcraft/Vouchers
 
 ## Community
 
