@@ -1,4 +1,5 @@
 # Vouchers
+[![](https://jitpack.io/v/anhcraft/Vouchers.svg)](https://jitpack.io/#anhcraft/Vouchers)
 
 Vouchers is a modern Minecraft plugin for creating vouchers!
 
