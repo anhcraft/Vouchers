@@ -13,8 +13,8 @@ public final class VoucherBuilder {
     String[] description;
     String[] rewards;
     ItemStack customItem;
-    GroupSettings cooldown = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
-    GroupSettings usageLimit = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
+    GroupSettings cooldown = GroupSettings.EMPTY_COOLDOWN;
+    GroupSettings usageLimit = GroupSettings.EMPTY_USAGE_LIMIT;
     String condition;
     boolean doubleCheck;
     boolean physicalId;

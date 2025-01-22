@@ -7,7 +7,9 @@ import java.util.*;
 
 public class GroupSettings {
     public static final String COOLDOWN_PERM = "vouchers.cooldown.";
+    public static final GroupSettings EMPTY_COOLDOWN = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
     public static final String USAGE_LIMIT_PERM = "vouchers.usage-limit.";
+    public static final GroupSettings EMPTY_USAGE_LIMIT = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
 
     private final String permissionPrefix;
     private final int global;
