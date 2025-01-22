@@ -348,7 +348,7 @@ public class VouchersManager {
     public void postUse(Player player, String id, String physicalId, Voucher voucher, int bulkSize) {
         for (String str : ObjectUtil.optional(voucher.getUseMessage(), plugin.messageConfig.defaultUseMessage)) {
             if (str == null) continue;
-            plugin.rawMsg(player, str
+            plugin.rawMsg(player, PlaceholderAPI.setPlaceholders(player, str)
                     .replace("{voucher-name}", voucher.getName())
                     .replace("{bulk-size}", String.valueOf(bulkSize)));
         }
