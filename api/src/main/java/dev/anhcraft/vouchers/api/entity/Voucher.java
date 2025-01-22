@@ -1,6 +1,7 @@
 package dev.anhcraft.vouchers.api.entity;
 
 import dev.anhcraft.vouchers.api.util.GroupSettings;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,9 @@ public class Voucher {
     private final String condition;
     private final boolean doubleCheck;
     private final boolean physicalId;
+    private final String[] useMessage;
 
+    @Deprecated(forRemoval = true)
     public Voucher(@NotNull Material icon,
                    @NotNull String name,
                    @NotNull String[] description,
@@ -31,6 +34,7 @@ public class Voucher {
         this(icon, name, description, rewards, customItem, usageLimit, cooldown, condition, doubleCheck, false);
     }
 
+    @Deprecated(forRemoval = true)
     public Voucher(@NotNull Material icon,
                    @NotNull String name,
                    @NotNull String[] description,
@@ -48,6 +52,25 @@ public class Voucher {
         this.condition = condition;
         this.doubleCheck = doubleCheck;
         this.physicalId = physicalId;
+        this.useMessage = null;
+    }
+
+    Voucher(VoucherBuilder builder) {
+        this.icon = builder.icon;
+        this.name = builder.name;
+        this.description = builder.description == null ?
+          ArrayUtils.EMPTY_STRING_ARRAY :
+          builder.description; // already cloned in builder
+        this.rewards = builder.rewards == null ?
+          ArrayUtils.EMPTY_STRING_ARRAY :
+          builder.rewards; // already cloned in builder
+        this.customItem = builder.customItem;
+        this.usageLimit = builder.usageLimit;
+        this.cooldown = builder.cooldown;
+        this.condition = builder.condition;
+        this.doubleCheck = builder.doubleCheck;
+        this.physicalId = builder.physicalId;
+        this.useMessage = builder.useMessage; // already cloned in builder
     }
 
     @NotNull
@@ -98,6 +121,11 @@ public class Voucher {
         return physicalId;
     }
 
+    @Nullable
+    public String[] getUseMessage() {
+        return useMessage;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -111,7 +139,8 @@ public class Voucher {
                 Objects.equals(usageLimit, voucher.usageLimit) &&
                 Objects.equals(cooldown, voucher.cooldown) &&
                 Objects.equals(condition, voucher.condition) &&
-                Objects.equals(doubleCheck, voucher.doubleCheck);
+                Objects.equals(doubleCheck, voucher.doubleCheck) &&
+                Arrays.equals(useMessage, voucher.useMessage);
     }
 
     @Override
@@ -119,6 +148,7 @@ public class Voucher {
         int result = Objects.hash(icon, name, customItem, usageLimit, cooldown, condition, doubleCheck);
         result = 31 * result + Arrays.hashCode(description);
         result = 31 * result + Arrays.hashCode(rewards);
+        result = 31 * result + Arrays.hashCode(useMessage);
         return result;
     }
 }

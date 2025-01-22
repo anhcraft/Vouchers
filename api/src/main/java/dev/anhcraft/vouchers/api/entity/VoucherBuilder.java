@@ -7,21 +7,18 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class VoucherBuilder {
-    private Material icon;
-    private String name;
-    private List<String> description = new ArrayList<>(3);
-    private List<String> rewards = new ArrayList<>(3);
-    private ItemStack customItem;
-    private GroupSettings cooldown = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
-    private GroupSettings usageLimit = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
-    private String condition;
-    private boolean doubleCheck;
-    private boolean physicalId;
+public final class VoucherBuilder {
+    Material icon;
+    String name;
+    String[] description;
+    String[] rewards;
+    ItemStack customItem;
+    GroupSettings cooldown = GroupSettings.empty(GroupSettings.COOLDOWN_PERM);
+    GroupSettings usageLimit = GroupSettings.empty(GroupSettings.USAGE_LIMIT_PERM);
+    String condition;
+    boolean doubleCheck;
+    boolean physicalId;
+    String[] useMessage;
 
     public VoucherBuilder icon(@NotNull Material icon) {
         this.icon = icon;
@@ -33,13 +30,15 @@ public class VoucherBuilder {
         return this;
     }
 
-    public VoucherBuilder description(@NotNull String... description) {
-        this.description.addAll(Arrays.asList(description));
+    public VoucherBuilder description(@Nullable String... description) {
+        if (description != null)
+            this.description = description.clone();
         return this;
     }
 
-    public VoucherBuilder rewards(@NotNull String... rewards) {
-        this.rewards.addAll(Arrays.asList(rewards));
+    public VoucherBuilder rewards(@Nullable String... rewards) {
+        if (rewards != null)
+            this.rewards = rewards.clone();
         return this;
     }
 
@@ -73,10 +72,16 @@ public class VoucherBuilder {
         return this;
     }
 
+    public VoucherBuilder useMessage(@Nullable String... useMessage) {
+        if (useMessage != null)
+            this.useMessage = useMessage.clone();
+        return this;
+    }
+
     public Voucher build() {
         Preconditions.checkNotNull(icon, "Icon must not be null");
         Preconditions.checkNotNull(name, "Name must not be null");
-        Preconditions.checkNotNull(description, "Description must not be null");
-        return new Voucher(icon, name, description.toArray(new String[0]), rewards.toArray(new String[0]), customItem, usageLimit, cooldown, condition, doubleCheck, physicalId);
+
+        return new Voucher(this);
     }
 }

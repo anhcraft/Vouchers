@@ -39,4 +39,7 @@ public class VoucherConfig {
     public boolean doubleCheck;
 
     public boolean physicalId;
+
+    @Nullable
+    public String[] useMessage;
 }

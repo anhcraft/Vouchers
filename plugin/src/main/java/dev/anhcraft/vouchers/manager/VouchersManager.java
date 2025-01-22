@@ -88,6 +88,7 @@ public class VouchersManager {
             }
             voucherBuilder.condition(config.condition);
             voucherBuilder.doubleCheck(config.doubleCheck);
+            voucherBuilder.useMessage(config.useMessage);
             vouchers.put(id, voucherBuilder.build());
         }
         plugin.getLogger().info("Loaded " + vouchers.size() + " vouchers");
@@ -308,6 +309,7 @@ public class VouchersManager {
     }
 
     private void sendMessage(Player player, boolean broadcast, String ctn) {
+        ctn = PlaceholderAPI.setPlaceholders(player, ctn);
         if (broadcast) {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 plugin.rawMsg(p, ctn);
@@ -344,7 +346,8 @@ public class VouchersManager {
     }
 
     public void postUse(Player player, String id, String physicalId, Voucher voucher, int bulkSize) {
-        for (String str : plugin.messageConfig.defaultUseMessage) {
+        for (String str : ObjectUtil.optional(voucher.getUseMessage(), plugin.messageConfig.defaultUseMessage)) {
+            if (str == null) continue;
             plugin.rawMsg(player, str
                     .replace("{voucher-name}", voucher.getName())
                     .replace("{bulk-size}", String.valueOf(bulkSize)));
