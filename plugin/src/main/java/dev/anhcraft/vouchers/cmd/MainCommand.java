@@ -38,7 +38,7 @@ public class MainCommand extends BaseCommand {
 
     @Subcommand("give")
     @CommandPermission("vouchers.give")
-    @CommandCompletion("@players @vouchers")
+    @CommandCompletion("@players @vouchers @range:1-5 @players")
     public void give(CommandSender sender, OnlinePlayer op, String voucherId, @Default("1") int amount, @Optional String exclusivePlayerName) {
         if (amount < 0) {
             sender.sendMessage(RED + "Amount must not be negative");
